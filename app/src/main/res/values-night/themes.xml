@@ -59,4 +59,25 @@
         <item name="android:textColorSecondary">@color/nobi_secondary_text</item>
     </style>
 
+    <!-- v22 w45: night twin of Theme.NobiReport.DayNight, following the
+         w31 NobiSettings precedent: a style in values-night/ REPLACES the
+         values/ definition wholesale at night, so this repeats the navy
+         chrome + body items and adds cyan links, which pass contrast only
+         at night (9.79:1 on the night body; 1.67:1 in day mode, hence no
+         cyan link in the day twin). -->
+    <style name="Theme.NobiReport.DayNight" parent="Theme.TermuxApp.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/nobi_navy</item>
+        <item name="colorPrimaryVariant">@color/nobi_navy</item>
+        <item name="colorPrimaryDark">@color/nobi_navy</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/nobi_navy</item>
+        <item name="colorSecondary">@color/nobi_cyan</item>
+        <item name="colorControlActivated">@color/nobi_cyan</item>
+        <item name="android:windowBackground">@color/nobi_body_surface</item>
+        <item name="android:colorBackground">@color/nobi_body_surface</item>
+        <item name="colorSurface">@color/nobi_body_surface</item>
+        <item name="android:textColorSecondary">@color/nobi_secondary_text</item>
+        <item name="android:textColorLink">@color/nobi_cyan</item>
+    </style>
+
 </resources>

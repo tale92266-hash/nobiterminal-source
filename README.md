@@ -1,7 +1,7 @@
-# NobiTerminal v21 — full source snapshot
+# NobiTerminal v22 — full source snapshot
 
-This repo is the **complete patched app source tree for NobiTerminal v21**
-(the version shipped as the v21 APK on 2026-10-27). It exists so the app's
+This repo is the **complete patched app source tree for NobiTerminal v22**
+(the version shipped as the v22 APK on 2026-10-27). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
 > This snapshot is for viewing and editing. It is **not** the build route.
@@ -16,39 +16,40 @@ source can be browsed, understood, and edited by hand in one place.
 > in place for every version — no new repo per version. `main` always
 > holds the latest shipped version's tree; each version is also kept as a
 > lightweight tag (`v20`, `v21`, …). This file describes the tree at
-> `main` (v21). The v20 tree is tag `v20`.
+> `main` (v22). The v20 and v21 trees are tags `v20` and `v21`.
 
 ## What this snapshot was made from (NEW pattern — plugin + base patches)
 
 - **Base:** upstream `termux/termux-app`
   `@8629e632fcb95da272221be327db653fb24befe9` (2026-09-26).
-- **Frozen base:** v21 is built on the frozen V19 base — generator branch
-  `v21-theme-batch` `@7885be2f41c114b256f0d95b17bfefc030c8a8c9`, branched
-  from `v20-ui-refresh` `@d5f6cdd0770f3353afb4edd9c8e6817ee83cf95b`
-  (itself from `frozen-v19-base` `@5df75ae247bdde23a3732afaaafbb69b7a4c4c1b`),
+- **Frozen base:** v22 is built on the frozen V19 base — generator branch
+  `v22-about-page` `@60e1823cccd9b762701c8baf775446dd69097f43`, branched
+  from `v21-theme-batch` `@7885be2f41c114b256f0d95b17bfefc030c8a8c9`
+  (itself from `v20-ui-refresh` `@d5f6cdd0770f3353afb4edd9c8e6817ee83cf95b`,
+  from `frozen-v19-base` `@5df75ae247bdde23a3732afaaafbb69b7a4c4c1b`),
   which pins termux-app `8629e632` and termux-packages `f8f7bf3d488a`
   (see below). No latest-upstream tracking: the freeze order stands
   until Sam says the app is final.
-- **Patches, in generator order:** first all 53 Nobi plugin patches from
-  generator branch `v21-theme-batch`
-  `@7885be2f41c114b256f0d95b17bfefc030c8a8c9`
-  (v20's 38 + fifteen new theme patches, w30–w44 — there is NO w21
+- **Patches, in generator order:** first all 54 Nobi plugin patches from
+  generator branch `v22-about-page`
+  `@60e1823cccd9b762701c8baf775446dd69097f43`
+  (v21's 53 + one new About-page patch, w45 — there is NO w21
   patch, see below), then the **base patches** from the generator repo's
   `f-droid-patches/app-patches/` dir — the same order the generator
   uses (`install_plugin` first, then `patch_apps`). All applied with GNU
   `patch -p1`. Plugin phase: 0 `.rej`, 0 `.orig`. Base phase: 0 `.rej`;
   `.orig` files from offset/fuzz were logged and deleted, exactly like
   the generator's `apply_patches` does.
-- **Shipped v21 APK for cross-reference:** 35,519,700 bytes,
-  SHA-256 `a2d495dea5f539b3fbb1d10304ba86904c49b96b35e3b30855492604b9962310`,
-  generator run `40495667509` (cache HIT, 9 min 29 s — the dc47 seed
+- **Shipped v22 APK for cross-reference:** 35,520,586 bytes,
+  SHA-256 `0e1d93bef95bd4c928cd3fe6ae0519f4a279652121e63f3df7c49a6868035221`,
+  generator run `40505228665` (cache HIT, 10 min 38 s — the dc47 seed
   published by the v20 build; no bootstrap patch changed, so the cache
   key did not move and no new seed was published),
   signer
   SHA-256 fingerprint
   `B6:DA:01:48:0E:EF:D5:FB:F2:CD:37:71:B8:D1:02:1E:C7:91:30:4B:DD:6C:4B:F4:1D:3F:AA:BA:D4:8E:E5:E1`.
 
-### The 53 plugin patches, in apply order
+### The 54 plugin patches, in apply order
 
 1. `nobiterminal-app-name.patch`
 2. `nobiterminal-drawer-default.patch`
@@ -103,6 +104,7 @@ source can be browsed, understood, and edited by hand in one place.
 51. `nobiterminal-w42-help-navy-cyan.patch` (3,316 bytes)
 52. `nobiterminal-w43-playback-terminal-like.patch` (1,918 bytes)
 53. `nobiterminal-w44-hubs-match-settings.patch` (12,133 bytes)
+54. `nobiterminal-w45-about-page.patch` (8,896 bytes)
 
 ### The 7 base patches — 5 applied, 2 out of scope (read this)
 
@@ -150,98 +152,95 @@ So this tree is the full CI tree **for the `termux-app` module**: every
 base-patch effect that lands inside `termux-app` is present; the two
 sibling-app-only patches have no effect on this module by construction.
 
-## What's new in v21 (vs v20) — theme unification batch
+## What's new in v22 (vs v21) — About page rebuild
 
-Sam picked 15 of the 19 theme-audit items (1, 2, 3, 5, 6, 7, 8, 9, 10,
-11, 13, 14, 15, 16, 17). Items 4, 12, 18, 19 were excluded by Sam and
-are NOT in this tree.
+Sam's order: the About page should be about NobiTerminal itself, with a
+clear credit to Termux and its developers, Termux links, and a nice page
+with smileys — plus a back arrow in the header. One patch, w45, 4 files.
 
-- **w30 — Settings controls cyan:** `Theme.NobiSettings.DayNight`
-  gains `colorSecondary`/`colorControlActivated` → `@color/nobi_cyan`
-  and `colorControlNormal` → navy; new `@color/nobi_periwinkle`
-  (`#FF9AA5D9`) in `values/colors.xml` (it did not exist anywhere).
-- **w31 — Settings body/secondary tokens + night twin:** mode-resolved
-  tokens `nobi_body_surface` (day `#FFF4F6FC` / night `#FF101730`,
-  NOT `#121212`) and `nobi_secondary_text` (day navy / night
-  periwinkle); a full night twin of the Settings theme in
-  `values-night/` (a night style replaces the day one wholesale); new
-  `values-night/colors.xml`. The v16 luminance-follow rule
-  (`nobiDesiredNightMode`/`setLocalNightMode`) is untouched.
-- **w32 — preference-row icons:** 15 preference-screen XML files, 56
-  `app:icon` attrs, 17 new cyan `nobi_pref_*` 24dp vectors (existing
-  vectors were white/black/violet-filled, wrong for this use; the bell
-  icon is reused as-is). Key-checkbox rows get the keyboard icon;
-  `PreferenceCategory` headers have no icons (headers, not rows).
-- **w33 — toolbar title + popup:** title 14sp → 16sp
-  `sans-serif-medium`; toolbar overlay → Dark.ActionBar-based (white
-  title/nav in both modes); new Nobi popup overlay (navy bg, white
-  text, 40%-cyan highlight). Shared `nobi_navy`/`nobi_cyan` tokens
-  added in `termux-shared` (library modules cannot see app colors).
-- **w34 — all dialogs navy + cyan:** shared dialog overlays (day +
-  night): `colorPrimary` red → navy, `colorSecondary` grey → cyan;
-  title-panel bg red → navy; PLUS an explicit `BaseDialog.Button`
-  style (cyan text) on the three button-bar styles, because navy
-  `colorPrimary` alone would paint buttons navy (unreadable on dark
-  surfaces).
-- **w35 — message dialogs DayNight:** `MessageDialogUtils.java` drops
-  the forced `Theme_AppCompat_Light_Dialog` (the AppCompat builder now
-  resolves the w34 overlay); buttons pinned cyan; layout title bar
-  red → navy, message text → `textColorPrimary`, links black → cyan.
-  All 5 call sites go through this one method — no caller forces
-  light anymore.
-- **w36 — drawer navy in day mode:** day twin only — drawer bg
-  white → navy, drawer tint black → white (night twin was already
-  navy/white). The same attrs feed the ViewPager keys strip.
-- **w37 — terminal accents cyan:** both `Theme.TermuxActivity` twins:
-  `colorPrimary` black → navy, `colorSecondary`/`colorControlActivated`
-  grey → cyan. `windowBackground` stays black.
-- **w38 — text-input highlight + cursor cyan:** highlight
-  `darker_gray` → 40% cyan token, cursor `@null` → new cyan
-  `nobi_text_cursor` drawable (2dp).
-- **w39 — scrollbar thumb:** `#66FFFFFF` → solid `#FF6B7FC7`
-  (darkened periwinkle): 5.49:1 on black, 3.83:1 on white (≥3:1 on
-  both; pure white is the worst-case light terminal background).
-- **w40 — bootstrap progress dialog Nobi-styled:** `TermuxInstaller.java`:
-  `ProgressDialog.show` → AppCompat `AlertDialog` + new
-  `dialog_nobi_progress.xml` (navy panel, cyan spinner, white message).
-  Same UI-thread creation, same background thread, same `runOnUiThread`
-  dismiss. One-time screen.
-- **w41 — Report/About toolbar navy:** new `Theme.NobiReport.DayNight`
-  + manifest wiring for `ReportActivity`. Toolbar only; markdown body
-  colors untouched.
-- **w42 — Help toolbar navy + cyan progress:** new
-  `Theme.NobiHelp.DayNight` (DarkActionBar-based) + manifest wiring for
-  `HelpActivity`; spinner tint also pinned in code. WebView content
-  (Termux wiki site) cannot be themed — out of scope.
-- **w43 — Playback terminal-like:** `NobiPlaybackActivity` REUSES
-  `Theme.NobiHelp.DayNight` (identical chrome need — a dedicated theme
-  would be a duplicate) + code colors: navy body, white mono text,
-  cyan selection highlight.
-- **w44 — hubs match Settings:** hub layouts + both Activities:
-  toolbars navy + white title/nav tint (v17 code pattern), buttons
-  cyan bg + navy text (10.50:1), bodies on the w31 surface/secondary
-  tokens, item rows secondary text.
-- **Everything else is v20 as-is:** w27 extra-keys navy, w28 drawer
-  ripple + cyan icons, w29 Nobita name strings, w26 word-highlight
-  fix, w25 current-line fix, w20 gutter tokens, w22 breadcrumb, w23
-  run-output errors, w24 cyan secondary, and the verified
-  pre-existing save/dirty chain.
+- **About header (new, About-only content):** built in code in
+  `SettingsActivity.configureAboutPreference` (the About content was
+  already 100% code-built; no `strings.xml` churn), placed before the
+  unchanged App Info / Device Info / Important Links blocks, so the
+  version info stays exactly as already reported:
+  - `# NobiTerminal ✨` — H1 uses `TermuxConstants.TERMUX_APP_NAME`
+    (`"NobiTerminal"`); the sparkle is the Java escape `\u2728`.
+  - `NobiTerminal is a terminal app based on Termux, with its own apt
+    repositories and the Nobi theme.` — grounded in the tree: upstream
+    fork @ 8629e632, the three `nobiterminal-repo[-2/-3]` deb lines in
+    `NobiRepoSetup.java`, and the `nobi_navy`/`nobi_cyan` theme tokens.
+    No feature invented.
+  - `## Thanks 🙏` — the folded-hands sign is the Java surrogate-pair
+    escape `\uD83D\uDE4F`.
+  - `Thanks, and all credit goes to Termux and its developers.` —
+    Sam's wording, verbatim, no emoji inside the sentence.
+  - `## Termux Links` + 6 markdown links. Every URL is a
+    `TermuxConstants` constant already present in the tree (the same
+    constants `getImportantLinksMarkdownString` uses) — the patch
+    references the constant, never a literal URL: Termux website
+    (`TERMUX_SITE_URL`), Termux on GitHub
+    (`TERMUX_GITHUB_REPO_URL`), Termux packages on GitHub
+    (`TERMUX_PACKAGES_GITHUB_REPO_URL`), Termux Wiki
+    (`TERMUX_WIKI_URL`), Termux support email
+    (`TERMUX_SUPPORT_EMAIL_MAILTO_URL`), r/termux on Reddit
+    (`TERMUX_REDDIT_SUBREDDIT_URL`). Links open via Markwon's default
+    `ACTION_VIEW` handling (no new link code). Deliberately NOT
+    included: `TERMUX_DONATE_URL` — the Donate row is hidden for
+    Play-signed builds (Play policy gate in
+    `SettingsActivity.configureDonatePreference`); surfacing it
+    unconditionally in About would bypass that gate. The legacy
+    Important Links block (all 8 GitHub repos + email + Reddit +
+    wikis) is kept unchanged below the new section, so no existing
+    link was dropped.
+- **Header back arrow (Sam's follow-up order):** `ReportActivity`
+  shows the real ActionBar up drawable (white title, white nav-icon
+  tint, both modes) via the shared helper
+  `AppCompatActivityUtils.setShowBackButtonInActionBar` — the exact
+  mechanism SettingsActivity uses (v17) — plus `onSupportNavigateUp`
+  → `onBackPressed`. This applies to ALL report screens (About,
+  transcript issue reports, crash reports, plugin reports), the same
+  scope w41's navy toolbar already took.
+- **Body tint:** `Theme.NobiReport.DayNight` gains the w31 tokens
+  (body surface `#FFF4F6FC` day / `#FF101730` night, secondary text
+  navy day / periwinkle night), plus a new night twin with cyan links
+  at night (9.79:1 on the night body; day keeps the inherited blue
+  `#0969DA`, 4.81:1 — cyan on the day body is 1.67:1 and was rejected
+  on contrast grounds). White on navy 18.98:1; navy on day body
+  17.56:1; periwinkle on night body 7.38:1. Solid theme-controlled
+  colors only; no gradients, no blur, no grey secondary text. The
+  header is built on the existing background thread — no new
+  UI-thread work, no new dependencies.
+- **Preserved byte-for-byte in construction:** the Share / Copy /
+  Save-to-file menu, the save-file path (`NobiTerminal-about.log`),
+  the system-back behaviour (`finishAndRemoveTask`), and the full App
+  Info / Device Info / Important Links blocks. Nothing removed.
+  Report body tint follows the app's night mode
+  (`ReportActivity.setNightMode`), not Settings' terminal-luminance
+  rule — pre-existing behaviour, untouched.
+- **Everything else is v21 as-is:** the w30–w44 theme batch (Settings
+  controls/body/icons, toolbar title + popup, dialogs navy/cyan,
+  drawer navy in day mode, terminal accents, text-input cursor,
+  scrollbar, bootstrap progress dialog, Report/Help/Playback themes,
+  hubs), w27 extra-keys navy, w28 drawer ripple + cyan icons, w29
+  Nobita name strings, w26 word-highlight fix, w25 current-line fix,
+  w20 gutter tokens, w22 breadcrumb, w23 run-output errors, w24 cyan
+  secondary, and the verified pre-existing save/dirty chain.
 - **NO w21 patch:** the save/dirty indicator chain (the would-be w21
   item) was verified to already exist, so no patch was made for it —
   the numbering skips w21 deliberately, it is not a missing file.
 - **Bootstrap patch unchanged:** no bootstrap patch was modified in
-  v21, so the cache key did not move (dc47) and the v21 build was a
+  v22, so the cache key did not move (dc47) and the v22 build was a
   cache HIT. The greeting caveat stands: existing installs keep their
   first-install bootstrap greeting files.
 - **Base patches (above)** — same 5 applied, same 2 sibling-only
-  patches out of scope, as in v16–v20.
+  patches out of scope, as in v16–v21.
 
 ## Dead PNG nuance (same as v11–v20)
 
 The 11 legacy launcher PNGs (`mipmap-*/ic_launcher.png`,
 `mipmap-*/ic_launcher_round.png`) plus `drawable/banner.png` are
 **present in this tree** (upstream files, 11/11 counted) but **absent
-from the shipped v21 APK** — the generator deletes them at build time
+from the shipped v22 APK** — the generator deletes them at build time
 (`remove_dead_nobi_assets()`, before Gradle). Do NOT claim tree == APK
 for these 11 files.
 
@@ -252,19 +251,19 @@ for these 11 files.
   `com.termux` paths. Building this tree directly produces a `com.termux`
   app.
 - **No bootstrap:** `app/src/main/assets/` is absent. CI builds the
-  bootstrap from `termux-packages` (v21 build used the frozen HEAD
+  bootstrap from `termux-packages` (v22 build used the frozen HEAD
   `f8f7bf3d488a`, cache HIT on the dc47 seed published by the v20
   build).
 - **Signing:** `app/testkey_untrusted.jks` is in the tree; its cert
-  fingerprint matches the shipped v21 APK signer exactly, so a debug
-  build from this tree installs over the shipped v21.
+  fingerprint matches the shipped v22 APK signer exactly, so a debug
+  build from this tree installs over the shipped v22.
 - **ACS:** `main` will NOT build directly in a phone IDE. With the base
   patches, TWO modules still wire `externalNativeBuild` ndkBuild
   (`terminal-emulator` → `libtermux`, `termux-shared` →
   `liblocal-socket`) — the `app` module no longer does (see
   `local-bootstraps` above). The phone IDE cannot run the inner
   `ndk-build` (v4 failed at `:termux-shared:configureNdkBuildDebug`,
-  exit 126). No `acs-prebuilt` branch exists for v21. Gradle wrapper jar IS in
+  exit 126). No `acs-prebuilt` branch exists for v22. Gradle wrapper jar IS in
   the tree, so ACS import does not hang on the wrapper.
 - **Upstream README:** upstream's `README.md` was renamed to
   `README_UPSTREAM.md` (content byte-identical); this file is the

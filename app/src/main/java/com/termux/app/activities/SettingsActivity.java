@@ -23,6 +23,7 @@ import com.termux.app.TermuxActivity;
 import com.termux.app.TermuxService;
 import com.termux.shared.activities.ReportActivity;
 import com.termux.shared.file.FileUtils;
+import com.termux.shared.markdown.MarkdownUtils;
 import com.termux.shared.models.ReportInfo;
 import com.termux.app.models.UserAction;
 import com.termux.app.nobi.NobiTerminalUtils;
@@ -235,8 +236,31 @@ public class SettingsActivity extends AppCompatActivity {
                         public void run() {
                             String title = "About";
 
+                            // v22 w45: About page header for NobiTerminal itself: app
+                            // v22 w45: description, prominent Termux credit, and curated
+                            // v22 w45: Termux links. URLs come only from TermuxConstants
+                            // v22 w45: (the same constants getImportantLinksMarkdownString
+                            // v22 w45: uses); links open via Markwon's default ACTION_VIEW
+                            // v22 w45: handling in ReportActivity. The app-info, device-info
+                            // v22 w45: and important-links blocks below are unchanged, so the
+                            // v22 w45: version info stays exactly as already reported.
+                            StringBuilder aboutHeader = new StringBuilder();
+                            aboutHeader.append("# ").append(TermuxConstants.TERMUX_APP_NAME).append(" \u2728\n");
+                            aboutHeader.append("\n").append(TermuxConstants.TERMUX_APP_NAME).append(" is a terminal app based on Termux, with its own apt repositories and the Nobi theme.\n");
+                            aboutHeader.append("\n## Thanks \uD83D\uDE4F\n");
+                            aboutHeader.append("\nThanks, and all credit goes to Termux and its developers.\n");
+                            aboutHeader.append("\n## Termux Links\n");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("Termux website", TermuxConstants.TERMUX_SITE_URL)).append("  ");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("Termux on GitHub", TermuxConstants.TERMUX_GITHUB_REPO_URL)).append("  ");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("Termux packages on GitHub", TermuxConstants.TERMUX_PACKAGES_GITHUB_REPO_URL)).append("  ");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("Termux Wiki", TermuxConstants.TERMUX_WIKI_URL)).append("  ");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("Termux support email", TermuxConstants.TERMUX_SUPPORT_EMAIL_MAILTO_URL)).append("  ");
+                            aboutHeader.append("\n").append(MarkdownUtils.getLinkMarkdownString("r/termux on Reddit", TermuxConstants.TERMUX_REDDIT_SUBREDDIT_URL)).append("  ");
+                            aboutHeader.append("\n##\n");
+
                             StringBuilder aboutString = new StringBuilder();
-                            aboutString.append(TermuxUtils.getAppInfoMarkdownString(context, TermuxUtils.AppInfoMode.TERMUX_AND_PLUGIN_PACKAGES));
+                            aboutString.append(aboutHeader.toString());
+                            aboutString.append("\n\n").append(TermuxUtils.getAppInfoMarkdownString(context, TermuxUtils.AppInfoMode.TERMUX_AND_PLUGIN_PACKAGES));
                             aboutString.append("\n\n").append(AndroidUtils.getDeviceInfoMarkdownString(context, true));
                             aboutString.append("\n\n").append(TermuxUtils.getImportantLinksMarkdownString(context));
 

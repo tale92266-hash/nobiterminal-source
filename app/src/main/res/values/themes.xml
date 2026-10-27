@@ -55,6 +55,14 @@
         <item name="android:statusBarColor">@color/nobi_navy</item>
         <item name="colorSecondary">@color/nobi_cyan</item>
         <item name="colorControlActivated">@color/nobi_cyan</item>
+        <!-- v22 w45: Nobi-tinted body + Nobi-hue secondary text (w31 tokens).
+             Day-mode links keep the inherited blue (#0969DA, 4.81:1 on the day
+             body): cyan links fail contrast in day mode (1.67:1), so cyan links
+             live only in the values-night twin of this style. -->
+        <item name="android:windowBackground">@color/nobi_body_surface</item>
+        <item name="android:colorBackground">@color/nobi_body_surface</item>
+        <item name="colorSurface">@color/nobi_body_surface</item>
+        <item name="android:textColorSecondary">@color/nobi_secondary_text</item>
     </style>
 
 
