@@ -81,6 +81,17 @@ public class ReportActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            // v22 w45: functional back arrow on the navy toolbar, exactly like
+            // v22 w45: SettingsActivity (v17): show the up affordance, keep the
+            // v22 w45: title white, and tint the navigation icon white in both
+            // v22 w45: modes. The arrow is the real ActionBar up drawable, never
+            // v22 w45: an emoji. Applies to every ReportActivity screen (About,
+            // v22 w45: issue reports, crash/plugin reports), as w41's navy
+            // v22 w45: toolbar already did.
+            AppCompatActivityUtils.setShowBackButtonInActionBar(this, true);
+            toolbar.setTitleTextColor(android.graphics.Color.WHITE);
+            android.graphics.drawable.Drawable navIcon = toolbar.getNavigationIcon();
+            if (navIcon != null) navIcon.mutate().setTint(android.graphics.Color.WHITE);
         }
 
         mBundle = null;
@@ -207,6 +218,13 @@ public class ReportActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Remove activity from recents menu on back button press
         finishAndRemoveTask();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        // v22 w45: toolbar back arrow navigates back exactly like SettingsActivity.
+        onBackPressed();
+        return true;
     }
 
     @Override
