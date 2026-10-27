@@ -2,8 +2,29 @@
 <resources>
 
     <!-- BaseToolbar Title text appearance. -->
+    <!-- v21 w33: toolbar title 14sp -> 16sp semibold. -->
     <style name="TextAppearance.Widget.BaseToolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- v21 w33: toolbar chrome overlay. Dark.ActionBar-based so the title and
+         navigation icon stay light on the navy toolbar in BOTH modes (the DayNight
+         overlay would give dark title text in day mode). -->
+    <style name="ThemeOverlay.NobiToolbar.DayNight" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <!-- v21 w33: Nobi popup menu. Navy surface, white item text, cyan press highlight. -->
+    <style name="ThemeOverlay.NobiPopup.DayNight" parent="ThemeOverlay.AppCompat.DayNight">
+        <item name="popupMenuStyle">@style/Widget.Nobi.PopupMenu</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlHighlight">@color/nobi_cyan_highlight</item>
+    </style>
+
+    <style name="Widget.Nobi.PopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@color/nobi_navy</item>
     </style>
 
     <!-- BaseToolbar Subtitle text appearance. -->
@@ -22,7 +43,7 @@
     -->
     <style name="BaseDialog.Title.Panel" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Panel">
         <!-- Title background. -->
-        <item name="android:background">@color/red_400</item>
+        <item name="android:background">@color/nobi_navy</item>
 
         <!-- Center Title. -->
         <item name="android:paddingTop">14dp</item>
@@ -53,6 +74,12 @@
 
 
 
+
+
+    <!-- v21 w34: dialog action buttons, cyan text on either surface. -->
+    <style name="BaseDialog.Button" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/nobi_cyan</item>
+    </style>
 
 
     <!-- ViewDivider style. -->

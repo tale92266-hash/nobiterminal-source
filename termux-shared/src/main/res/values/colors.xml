@@ -20,4 +20,10 @@
 
     <color name="blue_link_light">#0969DA</color>
     <color name="blue_link_dark">#58A6FF</color>
+
+    <!-- v21 w33/w34: Nobi tokens for the shared module (same hex as app colors.xml;
+         library modules cannot reference the app module's colors). -->
+    <color name="nobi_navy">#FF0A0F24</color>
+    <color name="nobi_cyan">#FF22D3EE</color>
+    <color name="nobi_cyan_highlight">#4022D3EE</color>
 </resources>

@@ -1,10 +1,10 @@
 package com.termux.shared.interact;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -51,7 +51,10 @@ public class MessageDialogUtils {
                                    final DialogInterface.OnClickListener onNegativeButton,
                                    final DialogInterface.OnDismissListener onDismiss) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog);
+        // v21 w35: no forced LIGHT dialog theme. The AppCompat builder resolves the
+        // activity theme's alertDialogTheme (ThemeOverlay.BaseDialog.DayNight, w34),
+        // so message dialogs follow day/night like every other dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View view = inflater.inflate(R.layout.dialog_show_message, null);
@@ -83,10 +86,10 @@ public class MessageDialogUtils {
             Logger.logError("dialog");
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null)
-                button.setTextColor(Color.BLACK);
+                button.setTextColor(ContextCompat.getColor(context, R.color.nobi_cyan));
             button = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
             if (button != null)
-                button.setTextColor(Color.BLACK);
+                button.setTextColor(ContextCompat.getColor(context, R.color.nobi_cyan));
         });
 
         dialog.show();
