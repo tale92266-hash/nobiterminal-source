@@ -9,8 +9,8 @@
     android:inputType="text"
     android:importantForAutofill="no"
     android:textColor="@android:color/white"
-    android:textColorHighlight="@android:color/darker_gray"
+    android:textColorHighlight="@color/nobi_cyan_highlight"
     android:paddingTop="0dp"
-    android:textCursorDrawable="@null"
+    android:textCursorDrawable="@drawable/nobi_text_cursor"
     android:paddingBottom="0dp"
     tools:ignore="LabelFor" />

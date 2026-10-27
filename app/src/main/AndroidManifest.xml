@@ -148,6 +148,7 @@
 
         <activity
             android:name=".app.activities.HelpActivity"
+            android:theme="@style/Theme.NobiHelp.DayNight"
             android:exported="false"
             android:label="@string/application_name"
             android:parentActivityName=".app.TermuxActivity"
@@ -162,7 +163,7 @@
 
         <activity
             android:name=".shared.activities.ReportActivity"
-            android:theme="@style/Theme.MarkdownViewActivity.DayNight"
+            android:theme="@style/Theme.NobiReport.DayNight"
             android:documentLaunchMode="intoExisting" />
 
         <activity
@@ -254,6 +255,7 @@
         <!-- v7 (37): session recording playback. -->
         <activity
             android:name=".app.nobi.NobiPlaybackActivity"
+            android:theme="@style/Theme.NobiHelp.DayNight"
             android:exported="false"
             android:label="Playback" />
 

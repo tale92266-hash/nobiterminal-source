@@ -8,6 +8,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.termux.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,8 +35,12 @@ public class NobiPlaybackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         scrollView = new ScrollView(this);
+        // v21 w43: terminal-like body: navy background, light mono text, cyan selection.
+        scrollView.setBackgroundColor(ContextCompat.getColor(this, R.color.nobi_navy));
         textView = new TextView(this);
         textView.setTypeface(android.graphics.Typeface.MONOSPACE);
+        textView.setTextColor(android.graphics.Color.WHITE);
+        textView.setHighlightColor(ContextCompat.getColor(this, R.color.nobi_cyan_highlight));
         textView.setTextSize(13);
         int pad = (int) (12 * getResources().getDisplayMetrics().density);
         textView.setPadding(pad, pad, pad, pad);

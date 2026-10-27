@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v21 w38: cyan text cursor for the terminal text-input bar (2dp). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size android:width="2dp" />
+    <solid android:color="@color/nobi_cyan" />
+</shape>

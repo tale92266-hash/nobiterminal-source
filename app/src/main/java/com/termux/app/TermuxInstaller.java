@@ -2,7 +2,6 @@ package com.termux.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Build;
@@ -122,7 +121,20 @@ final class TermuxInstaller {
             Logger.logInfo(LOG_TAG, "The termux prefix directory \"" + TERMUX_PREFIX_DIR_PATH + "\" does not exist but another file exists at its destination.");
         }
 
-        final ProgressDialog progress = ProgressDialog.show(activity, null, activity.getString(R.string.bootstrap_installer_body), true, false);
+        // v21 w40: navy dialog + cyan spinner + white message (custom layout), built
+        // on the UI thread exactly like ProgressDialog.show was. The background thread
+        // and the runOnUiThread dismiss in finally are unchanged. The AppCompat
+        // builder (not the framework one) is used so the dialog window follows the
+        // activity theme; the window background is transparent so only the navy
+        // panel shows. Non-cancelable, as the old ProgressDialog.show(..., false) was.
+        final androidx.appcompat.app.AlertDialog progress = new androidx.appcompat.app.AlertDialog.Builder(activity)
+            .setView(R.layout.dialog_nobi_progress)
+            .setCancelable(false)
+            .create();
+        progress.setCanceledOnTouchOutside(false);
+        if (progress.getWindow() != null)
+            progress.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        progress.show();
         new Thread() {
             @Override
             public void run() {

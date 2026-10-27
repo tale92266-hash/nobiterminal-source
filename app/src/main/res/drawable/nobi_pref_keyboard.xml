@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- v21 w32: keyboard outline + key dots. -->
+    <path
+        android:pathData="M4,6h16v12H4z"
+        android:strokeColor="@color/nobi_cyan"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent" />
+    <path
+        android:fillColor="@color/nobi_cyan"
+        android:pathData="M7,9h2v2H7zM11,9h2v2h-2zM15,9h2v2h-2zM7,13h2v2H7zM11,13h2v2h-2zM15,13h2v2h-2z" />
+</vector>

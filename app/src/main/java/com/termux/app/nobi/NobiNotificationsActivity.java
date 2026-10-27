@@ -57,6 +57,11 @@ public class NobiNotificationsActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.nobiNotificationsToolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        // v21 w44: white title + white back arrow on the navy toolbar (v17 pattern).
+        toolbar.setTitleTextColor(android.graphics.Color.WHITE);
+        android.graphics.drawable.Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon != null) navIcon.mutate().setTint(android.graphics.Color.WHITE);
+
         emptyState = findViewById(R.id.nobiNotificationsEmpty);
         emptyText = findViewById(R.id.nobiNotificationsEmptyText);
         grantButton = findViewById(R.id.nobiNotificationsGrantButton);

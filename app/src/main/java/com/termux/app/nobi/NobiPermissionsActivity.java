@@ -50,6 +50,11 @@ public class NobiPermissionsActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.nobiPermissionsToolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        // v21 w44: white title + white back arrow on the navy toolbar (v17 pattern).
+        toolbar.setTitleTextColor(android.graphics.Color.WHITE);
+        android.graphics.drawable.Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon != null) navIcon.mutate().setTint(android.graphics.Color.WHITE);
+
         findViewById(R.id.nobiPermissionsViewNotifications).setOnClickListener(v ->
                 startActivity(new Intent(this, NobiNotificationsActivity.class)));
 

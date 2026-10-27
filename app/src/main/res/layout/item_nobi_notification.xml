@@ -24,6 +24,7 @@
 
         <TextView
             android:id="@+id/nobiNotificationTime"
+            android:textColor="@color/nobi_secondary_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp" />
@@ -38,6 +39,7 @@
 
     <TextView
         android:id="@+id/nobiNotificationText"
+        android:textColor="@color/nobi_secondary_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"

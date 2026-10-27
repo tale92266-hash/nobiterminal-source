@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- v21 w32: overlapping windows, cyan fill (geometry as ic_new_window). -->
+    <path
+        android:fillColor="@color/nobi_cyan"
+        android:fillAlpha="0.55"
+        android:pathData="M9,3 L21,3 L21,15 L9,15 Z" />
+    <path
+        android:fillColor="@color/nobi_cyan"
+        android:pathData="M3,5 L15,5 L15,17 L3,17 Z" />
+</vector>

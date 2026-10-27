@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="@color/nobi_body_surface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,8 +14,9 @@
             android:id="@+id/nobiPermissionsToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurface"
+            android:background="@color/nobi_navy"
             app:title="@string/nobi_permissions_title"
+            app:titleTextColor="@android:color/white"
             app:navigationIcon="@drawable/nobi_ic_arrow_back" />
 
         <TextView
@@ -26,6 +27,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
             android:text="@string/nobi_permissions_intro"
+            android:textColor="@color/nobi_secondary_text"
             android:textSize="14sp" />
 
         <Button
@@ -34,7 +36,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/nobi_notifications_view" />
+            android:text="@string/nobi_notifications_view"
+            app:backgroundTint="@color/nobi_cyan"
+            android:textColor="@color/nobi_navy" />
 
         <!-- One row per permission: title, what it is for, status. Tapping a
              row requests that permission only — nothing is ever requested
@@ -74,11 +78,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_notif_access_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusNotifAccess"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -119,11 +125,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_overlay_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusOverlay"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -164,11 +172,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_all_files_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusAllFiles"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -209,11 +219,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_install_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusInstall"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -254,11 +266,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_battery_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusBattery"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -299,11 +313,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_post_notif_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusPostNotif"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />
@@ -344,11 +360,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/nobi_perm_storage_desc"
+                    android:textColor="@color/nobi_secondary_text"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/nobiPermStatusStorage"
+                android:textColor="@color/nobi_secondary_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp" />

@@ -9,6 +9,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.content.res.ColorStateList;
+
+import androidx.core.content.ContextCompat;
+
+import com.termux.R;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +34,8 @@ public final class HelpActivity extends AppCompatActivity {
         lParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setIndeterminate(true);
+        // v21 w42: cyan spinner, pinned explicitly (theme colorAccent is the fallback).
+        progressBar.setIndeterminateTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.nobi_cyan)));
         progressBar.setLayoutParams(lParams);
         progressLayout.addView(progressBar);
 

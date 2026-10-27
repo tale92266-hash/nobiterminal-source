@@ -1,6 +1,7 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
+        app:icon="@drawable/nobi_pref_theme"
         app:key="nobi_theme_list"
         app:title="@string/nobi_theme_preference_title"
         app:summary="@string/nobi_theme_screen_summary"

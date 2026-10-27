@@ -8,4 +8,13 @@
     <!-- v20: Nobi cyan (matches notification + splash name) + lighter-navy pressed surface for extra keys. -->
     <color name="nobi_cyan">#FF22D3EE</color>
     <color name="nobi_key_pressed">#FF1E2C55</color>
+    <!-- v21 w30/w31: periwinkle secondary text for dark surfaces (never grey). -->
+    <color name="nobi_periwinkle">#FF9AA5D9</color>
+    <!-- v21 w31: mode-resolved body/secondary tokens (night twins live in values-night/colors.xml). -->
+    <color name="nobi_body_surface">#FFF4F6FC</color>
+    <color name="nobi_secondary_text">@color/nobi_navy</color>
+    <!-- v21 w38: 40% cyan selection highlight for the terminal text-input bar. -->
+    <color name="nobi_cyan_highlight">#6622D3EE</color>
+    <!-- v21 w39: scrollbar thumb tint, >=3:1 on black (5.49:1) and white (3.83:1). -->
+    <color name="nobi_scroll_thumb">#FF6B7FC7</color>
 </resources>

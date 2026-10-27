@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface">
+    android:background="@color/nobi_body_surface">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/nobiNotificationsToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurface"
+        android:background="@color/nobi_navy"
         app:title="@string/nobi_notifications_title"
+        app:titleTextColor="@android:color/white"
         app:navigationIcon="@drawable/nobi_ic_arrow_back" />
 
     <!-- Empty state: shown when access is off, or when nothing arrived yet. -->
@@ -36,6 +37,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="@string/nobi_notifications_empty_no_access"
+            android:textColor="@color/nobi_secondary_text"
             android:textSize="15sp" />
 
         <Button
@@ -43,7 +45,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/nobi_notifications_grant" />
+            android:text="@string/nobi_notifications_grant"
+            app:backgroundTint="@color/nobi_cyan"
+            android:textColor="@color/nobi_navy" />
     </LinearLayout>
 
     <ScrollView
@@ -72,13 +76,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/nobi_notifications_showing_latest"
+            android:textColor="@color/nobi_secondary_text"
             android:textSize="13sp" />
 
         <Button
             android:id="@+id/nobiNotificationsClearButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/nobi_notifications_clear" />
+            android:text="@string/nobi_notifications_clear"
+            app:backgroundTint="@color/nobi_cyan"
+            android:textColor="@color/nobi_navy" />
     </LinearLayout>
 
 </LinearLayout>
