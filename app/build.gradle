@@ -17,6 +17,13 @@ android {
 
     compileSdkVersion project.properties.compileSdkVersion.toInteger()
     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
+
+    // v29: exclude duplicate META-INF/DEPENDENCIES — :nobifile's FTP jars
+    // (ftpserver-core, mina-core, ftplet-api) each ship one; the merger fails
+    // on the duplicate path. It is Maven build metadata, unused at runtime.
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
     def appVersionName = System.getenv("TERMUX_APP_VERSION_NAME") ?: ""
     def apkVersionTag = System.getenv("TERMUX_APK_VERSION_TAG") ?: ""
     def splitAPKsForDebugBuilds = System.getenv("TERMUX_SPLIT_APKS_FOR_DEBUG_BUILDS") ?: "1"
