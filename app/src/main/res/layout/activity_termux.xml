@@ -7,25 +7,25 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true">
 
-    <!-- v24 w48: Material 3-style TopAppBar (spec 2A). 56dp, nav icon opens
-         the drawer, title is the app name, subtitle is the current session
-         (set from code in updateNobiToolbarSubtitle). -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/nobi_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/nobi_ds_toolbar_height"
-        android:background="@color/nobi_ds_app_bg"
-        app:navigationIcon="@drawable/ic_nobi_menu"
-        app:title="@string/application_name"
-        app:titleTextColor="@color/nobi_ds_text_primary"
-        app:subtitleTextColor="@color/nobi_ds_text_secondary" />
+    <!-- v25: NO separate heading — the Chrome-type tab strip below IS the
+         top bar (Sam: tabs wala section hi heading ka kaam kare). The v24
+         56dp MaterialToolbar is gone; session title lives in the tab. -->
 
     <LinearLayout
         android:id="@+id/nobi_tabs_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/nobi_ds_tabs_bar_height"
         android:orientation="horizontal"
-        android:background="@color/nobi_ds_surface">
+        android:background="@color/nobi_ds_app_bg">
+
+        <!-- App-mark button: opens the drawer (was the toolbar nav icon). -->
+        <ImageView
+            android:id="@+id/nobi_tabs_menu"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:contentDescription="Open navigation drawer"
+            android:src="@drawable/ic_nobi_menu" />
 
         <HorizontalScrollView
             android:id="@+id/nobi_tabs_scroll_view"
@@ -43,11 +43,11 @@
 
         <TextView
             android:id="@+id/nobi_tab_add"
-            android:layout_width="40dp"
+            android:layout_width="48dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="+"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="@color/nobi_ds_accent"
             android:contentDescription="New session" />
     </LinearLayout>
@@ -106,6 +106,23 @@
                 android:orientation="vertical"
                 android:background="@drawable/nobi_drawer_background">
 
+                <!-- v25: drawer scrolls — header + menu live inside a
+                     ScrollView (weight 1), so no menu row is ever clipped
+                     on short screens. The sessions ListView below scrolls
+                     by itself; the bottom buttons stay pinned. -->
+                <ScrollView
+                    android:id="@+id/nobi_drawer_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:scrollbars="none"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
                 <!-- v24 w49: compact M3 drawer header (spec 3): icon +
                      app name + "Developer workspace" + real version.
                      Replaces the v5 settings-gear row (gone since v5,
@@ -162,8 +179,7 @@
                 <LinearLayout
                     android:id="@+id/nobi_drawer_menu"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingTop="0dp">
 
@@ -423,6 +439,9 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+                    </LinearLayout>
+                </ScrollView>
 
                 <ListView
                     android:id="@+id/terminal_sessions_list"

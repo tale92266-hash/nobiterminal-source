@@ -14,11 +14,9 @@
     <dimen name="nobi_ds_corner_large">16dp</dimen>
     <dimen name="nobi_ds_corner_xl">20dp</dimen>
     <dimen name="nobi_ds_corner_xxl">24dp</dimen>
-    <!-- TopAppBar (spec 2A). -->
-    <dimen name="nobi_ds_toolbar_height">56dp</dimen>
-    <!-- Session tabs bar (spec 2B). -->
-    <dimen name="nobi_ds_tabs_bar_height">40dp</dimen>
-    <dimen name="nobi_ds_tab_corner">12dp</dimen>
+    <!-- Session tabs bar (v25: the strip IS the top bar, Chrome height). -->
+    <dimen name="nobi_ds_tabs_bar_height">48dp</dimen>
+    <dimen name="nobi_ds_tab_corner">8dp</dimen>
     <!-- Navigation drawer (spec 3). -->
     <dimen name="nobi_ds_drawer_width">304dp</dimen>
     <dimen name="nobi_ds_drawer_item_height">54dp</dimen>

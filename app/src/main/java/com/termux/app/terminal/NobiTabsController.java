@@ -48,10 +48,13 @@ public class NobiTabsController {
     private static final String PREF_KEY_NOTES = "tab_notes";
     private static final String PREF_KEY_COLORS = "tab_colors";
 
-    // v24 w48: tab colours resolve from the design-system tokens at
-    // runtime (mode-resolved), so the strip follows day/night. Inactive
-    // tabs are transparent — the bar surface shows through. Per-tab
-    // colour dots and the user accent preference are untouched.
+    // v25: Chrome-type tabs — the strip is the top bar now. Active tab
+    // is a raised surface tab with rounded TOP corners only (it sits on
+    // the strip's bottom edge, like a Chrome tab); inactive tabs are
+    // flat and transparent. Active title = primary text, inactive =
+    // secondary — Chrome does not colour the active title with the
+    // accent. The user's accent preference is untouched (it still tints
+    // the bottom bar); the "+" button uses the ds accent token.
 
     private final TermuxActivity mActivity;
     private final HorizontalScrollView mTabsScrollView;
@@ -262,14 +265,6 @@ public class NobiTabsController {
         }
     }
 
-    private int parseNobiAccent(String hex) {
-        try {
-            return android.graphics.Color.parseColor(hex);
-        } catch (Exception e) {
-            return dsColor(R.color.nobi_ds_accent);
-        }
-    }
-
     /** Resolve a mode-aware design-system colour. */
     private int dsColor(int resId) {
         return ContextCompat.getColor(mActivity, resId);
@@ -279,32 +274,34 @@ public class NobiTabsController {
         LinearLayout tab = new LinearLayout(mActivity);
         tab.setOrientation(LinearLayout.HORIZONTAL);
         tab.setGravity(Gravity.CENTER_VERTICAL);
-        // v7 (71/84/87): tab style + accent + density.
+        // v7 (71/84/87): tab style + density.
         SharedPreferences v7Prefs = mActivity.getSharedPreferences("nobi_v7", Context.MODE_PRIVATE);
         String tabStyle = v7Prefs.getString("tab_style", "rounded");
         boolean compact = "compact".equals(v7Prefs.getString("density", "comfortable"));
-        int accent = parseNobiAccent(v7Prefs.getString("accent", "#25C2D8"));
-        int activeText = isActive ? accent : dsColor(R.color.nobi_ds_text_secondary);
-        int activeBg = dsColor(R.color.nobi_ds_selected);
-        int inactiveBg = android.graphics.Color.TRANSPARENT;
+        int activeText = isActive ? dsColor(R.color.nobi_ds_text_primary)
+            : dsColor(R.color.nobi_ds_text_secondary);
         int failedText = dsColor(R.color.nobi_ds_error);
         int verticalPad = dp(compact ? 2 : 4);
-        if ("rounded".equals(tabStyle)) {
-            android.graphics.drawable.GradientDrawable bg =
-                new android.graphics.drawable.GradientDrawable();
-            bg.setCornerRadius(dp(12));
-            bg.setColor(isActive ? activeBg : inactiveBg);
-            tab.setBackground(bg);
+        android.graphics.drawable.GradientDrawable bg =
+            new android.graphics.drawable.GradientDrawable();
+        if (isActive) {
+            bg.setColor(dsColor(R.color.nobi_ds_surface));
+            // Rounded TOP corners only (8dp) — the tab meets the terminal
+            // area along a straight bottom edge, like a Chrome tab.
+            bg.setCornerRadii(new float[]{dp(8), dp(8), dp(8), dp(8), 0, 0, 0, 0});
         } else {
-            tab.setBackgroundColor(isActive ? activeBg : inactiveBg);
+            bg.setColor(android.graphics.Color.TRANSPARENT);
         }
+        tab.setBackground(bg);
         // v8 sizing: wider tabs (width only — height/verticalPad untouched)
         // so short tabs stop crowding each other and mis-taps drop.
         tab.setPadding(dp(16), verticalPad, dp(8), verticalPad);
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        tabParams.setMargins(0, dp(4), dp(8), dp(4));
+        // Top gap so the active tab reads as raised; no bottom gap so it
+        // sits flush on the strip's bottom edge (Chrome-style).
+        tabParams.setMargins(dp(2), dp(6), dp(2), 0);
         tab.setLayoutParams(tabParams);
         tab.setMinimumWidth(dp(88));
 

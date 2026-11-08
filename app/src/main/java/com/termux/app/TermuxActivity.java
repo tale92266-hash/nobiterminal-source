@@ -1769,10 +1769,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         if (nobiGlassLook()) {
             android.graphics.drawable.GradientDrawable bg =
                 new android.graphics.drawable.GradientDrawable();
-            bg.setColor(0x991A1A2E);
+            bg.setColor(0x99202021);
             bar.setBackground(bg);
         } else {
-            bar.setBackgroundColor(0xFF0A0F24);
+            // v25: neutral app bg (was hardcoded navy #0A0F24).
+            // ContextCompat, not getColor(): minSdk is 21, getColor needs 23.
+            bar.setBackgroundColor(androidx.core.content.ContextCompat.getColor(
+                this, R.color.nobi_ds_app_bg));
         }
         int accent = nobiAccentColor();
         int[] ids = new int[]{R.id.nobi_bottom_tabs, R.id.nobi_bottom_editor, R.id.nobi_bottom_settings};
@@ -1782,20 +1785,19 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
     }
 
-    // ---- v24 w48: Material 3-style TopAppBar (spec 2A). App chrome
-    // only: nav icon opens the drawer, title is the app name, subtitle
-    // is the current session's tab label (updated by refreshNobiTabs).
-    // No menu actions: new session stays on the tabs-bar "+" — the FAB
-    // was removed as a duplicate (its 4 actions all live in the drawer).
-    private void setupNobiToolbar() {
-        com.google.android.material.appbar.MaterialToolbar toolbar =
-            findViewById(R.id.nobi_toolbar);
-        if (toolbar == null) return;
-        toolbar.setNavigationOnClickListener(v -> {
-            if (getDrawer() != null)
-                getDrawer().openDrawer(android.view.Gravity.LEFT);
-        });
-        updateNobiToolbarSubtitle();
+    // ---- v25: Chrome-type tab strip is the top bar (the v24 56dp
+    // MaterialToolbar heading is gone — Sam: tabs wala section hi
+    // heading ka kaam kare). The app-mark button at the strip's left
+    // opens the drawer; it replaces the toolbar nav icon. Session
+    // title lives in the active tab, not in a heading row.
+    private void setupNobiTabsBar() {
+        View menuButton = findViewById(R.id.nobi_tabs_menu);
+        if (menuButton != null) {
+            menuButton.setOnClickListener(v -> {
+                if (getDrawer() != null)
+                    getDrawer().openDrawer(android.view.Gravity.LEFT);
+            });
+        }
     }
 
     // ---- v24 w49: drawer header version + M3 scrim (spec 3). The
@@ -1815,16 +1817,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             }
         }
         if (getDrawer() != null) getDrawer().setScrimColor(0x52000000);
-    }
-
-    private void updateNobiToolbarSubtitle() {
-        com.google.android.material.appbar.MaterialToolbar toolbar =
-            findViewById(R.id.nobi_toolbar);
-        if (toolbar == null) return;
-        String subtitle = null;
-        if (mNobiTabsController != null && getCurrentSession() != null)
-            subtitle = mNobiTabsController.getTabLabel(getCurrentSession());
-        toolbar.setSubtitle(subtitle);
     }
 
     // ---- v7 (88): drawer customization ----
@@ -2063,8 +2055,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     // ---- v7 (70/81/82/83): terminal chrome setup ----
 
     private void setupNobiV7Chrome(Bundle savedInstanceState) {
-        // v24 w48: TopAppBar setup (nav icon + session subtitle).
-        setupNobiToolbar();
+        // v25: tab-strip top bar setup (menu button opens the drawer).
+        setupNobiTabsBar();
         // v24 w49: drawer header version + M3 scrim.
         setupNobiDrawerHeader();
         // Bottom bar (81): tabs cycle, editor, settings in one tap.
@@ -3132,7 +3124,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     public void refreshNobiTabs() {
         if (mNobiTabsController != null)
             mNobiTabsController.refreshTabs();
-        updateNobiToolbarSubtitle();
     }
 
     public boolean isVisible() {
