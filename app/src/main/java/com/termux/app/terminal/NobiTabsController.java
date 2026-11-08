@@ -14,6 +14,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import com.termux.R;
 import com.termux.app.TermuxActivity;
 import com.termux.app.TermuxService;
@@ -47,11 +48,10 @@ public class NobiTabsController {
     private static final String PREF_KEY_NOTES = "tab_notes";
     private static final String PREF_KEY_COLORS = "tab_colors";
 
-    private static final int COLOR_TAB_ACTIVE_BG = 0xFF1B2452;
-    private static final int COLOR_TAB_INACTIVE_BG = 0xFF101736;
-    private static final int COLOR_TAB_ACTIVE_TEXT = 0xFF22D3EE;
-    private static final int COLOR_TAB_INACTIVE_TEXT = 0xFF9AA5D9;
-    private static final int COLOR_TAB_FAILED_TEXT = 0xFFFB7185;
+    // v24 w48: tab colours resolve from the design-system tokens at
+    // runtime (mode-resolved), so the strip follows day/night. Inactive
+    // tabs are transparent — the bar surface shows through. Per-tab
+    // colour dots and the user accent preference are untouched.
 
     private final TermuxActivity mActivity;
     private final HorizontalScrollView mTabsScrollView;
@@ -262,12 +262,17 @@ public class NobiTabsController {
         }
     }
 
-    private static int parseNobiAccent(String hex) {
+    private int parseNobiAccent(String hex) {
         try {
             return android.graphics.Color.parseColor(hex);
         } catch (Exception e) {
-            return COLOR_TAB_ACTIVE_TEXT;
+            return dsColor(R.color.nobi_ds_accent);
         }
+    }
+
+    /** Resolve a mode-aware design-system colour. */
+    private int dsColor(int resId) {
+        return ContextCompat.getColor(mActivity, resId);
     }
 
     private View createTabView(final TerminalSession session, int displayIndex, boolean isActive) {
@@ -278,17 +283,20 @@ public class NobiTabsController {
         SharedPreferences v7Prefs = mActivity.getSharedPreferences("nobi_v7", Context.MODE_PRIVATE);
         String tabStyle = v7Prefs.getString("tab_style", "rounded");
         boolean compact = "compact".equals(v7Prefs.getString("density", "comfortable"));
-        int accent = parseNobiAccent(v7Prefs.getString("accent", "#22D3EE"));
-        int activeText = isActive ? accent : COLOR_TAB_INACTIVE_TEXT;
+        int accent = parseNobiAccent(v7Prefs.getString("accent", "#25C2D8"));
+        int activeText = isActive ? accent : dsColor(R.color.nobi_ds_text_secondary);
+        int activeBg = dsColor(R.color.nobi_ds_selected);
+        int inactiveBg = android.graphics.Color.TRANSPARENT;
+        int failedText = dsColor(R.color.nobi_ds_error);
         int verticalPad = dp(compact ? 2 : 4);
         if ("rounded".equals(tabStyle)) {
             android.graphics.drawable.GradientDrawable bg =
                 new android.graphics.drawable.GradientDrawable();
-            bg.setCornerRadius(dp(14));
-            bg.setColor(isActive ? COLOR_TAB_ACTIVE_BG : COLOR_TAB_INACTIVE_BG);
+            bg.setCornerRadius(dp(12));
+            bg.setColor(isActive ? activeBg : inactiveBg);
             tab.setBackground(bg);
         } else {
-            tab.setBackgroundColor(isActive ? COLOR_TAB_ACTIVE_BG : COLOR_TAB_INACTIVE_BG);
+            tab.setBackgroundColor(isActive ? activeBg : inactiveBg);
         }
         // v8 sizing: wider tabs (width only — height/verticalPad untouched)
         // so short tabs stop crowding each other and mis-taps drop.
@@ -328,7 +336,7 @@ public class NobiTabsController {
         if (!session.isRunning()) {
             titleView.setPaintFlags(titleView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             if (session.getExitStatus() != 0)
-                titleView.setTextColor(COLOR_TAB_FAILED_TEXT);
+                titleView.setTextColor(failedText);
         }
         tab.addView(titleView);
 

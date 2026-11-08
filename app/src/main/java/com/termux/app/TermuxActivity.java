@@ -297,8 +297,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         setTerminalToolbarView(savedInstanceState);
 
-        setSettingsButtonView();
-
         setNewSessionButtonView();
 
         setToggleKeyboardView();
@@ -595,6 +593,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         // onServiceConnected hunk still applies cleanly on top.
         deliverPendingTerminalInput();
         // v7: editor→terminal extras, startup picker, time-aware theme.
+        // v24 w48: compact the oversized motd art once (guarded, bg thread).
+        com.termux.app.nobi.NobiWelcome.compactMotdIfNeeded(TermuxActivity.this);
         deliverNobiExtras();
         showNobiStartupPickerIfNeeded();
         applyNobiTimeAwareTheme();
@@ -821,11 +821,11 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     /** v7 accent colour (hex), default neon cyan. */
     int nobiAccentColor() {
-        String hex = nobiV7Prefs().getString("accent", "#22D3EE");
+        String hex = nobiV7Prefs().getString("accent", "#25C2D8");
         try {
             return android.graphics.Color.parseColor(hex);
         } catch (Exception e) {
-            return android.graphics.Color.parseColor("#22D3EE");
+            return android.graphics.Color.parseColor("#25C2D8");
         }
     }
 
@@ -1044,7 +1044,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         String message = serverRunning
             ? getString(R.string.nobi_exit_server_warning)
             : getString(R.string.nobi_exit_message);
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setTitle(R.string.nobi_exit_title)
             .setMessage(message)
             .setView(saveBox)
@@ -1694,7 +1694,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private void showNobiAccentDialog() {
         // w19: dialog khulte hi keyboard neeche karo, is dialog me typing nahi hai.
         com.termux.shared.view.KeyboardUtils.hideSoftKeyboard(this, mTerminalView);
-        final String[] hexes = new String[]{"#22D3EE", "#8B5CF6", "#34D399", "#FBBF24",
+        final String[] hexes = new String[]{"#25C2D8", "#8B5CF6", "#34D399", "#FBBF24",
             "#F87171", "#F472B6", "#60A5FA"};
         final String[] labels = new String[]{
             getString(R.string.nobi_accent_cyan), getString(R.string.nobi_accent_violet),
@@ -1702,14 +1702,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             getString(R.string.nobi_accent_red), getString(R.string.nobi_accent_pink),
             getString(R.string.nobi_accent_blue)};
         int checked = 0;
-        String current = nobiV7Prefs().getString("accent", "#22D3EE");
+        String current = nobiV7Prefs().getString("accent", "#25C2D8");
         for (int i = 0; i < hexes.length; i++) if (hexes[i].equalsIgnoreCase(current)) checked = i;
         new AlertDialog.Builder(this)
             .setTitle(R.string.nobi_tool_accent)
             .setSingleChoiceItems(labels, checked, (dialog, which) -> {
                 nobiV7Prefs().edit().putString("accent", hexes[which]).apply();
                 if (mNobiTabsController != null) mNobiTabsController.refreshTabs();
-                applyNobiFabTint();
                 applyNobiBottomBarTint();
                 dialog.dismiss();
             })
@@ -1756,15 +1755,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             Toast.LENGTH_SHORT).show();
     }
 
-    private void toggleNobiFab() {
-        boolean on = !nobiV7Prefs().getBoolean("fab", true);
-        nobiV7Prefs().edit().putBoolean("fab", on).apply();
-        applyNobiFabVisibility();
-        Toast.makeText(this, getString(R.string.nobi_tool_fab) + ": "
-            + (on ? getString(R.string.nobi_on) : getString(R.string.nobi_off)),
-            Toast.LENGTH_SHORT).show();
-    }
-
     private void applyNobiBottomBarVisibility() {
         View bar = findViewById(R.id.nobi_bottom_bar);
         if (bar != null) {
@@ -1792,23 +1782,49 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
     }
 
-    private void applyNobiFabVisibility() {
-        View fab = findViewById(R.id.nobi_fab);
-        if (fab != null) {
-            fab.setVisibility(nobiV7Prefs().getBoolean("fab", true) ? View.VISIBLE : View.GONE);
-        }
+    // ---- v24 w48: Material 3-style TopAppBar (spec 2A). App chrome
+    // only: nav icon opens the drawer, title is the app name, subtitle
+    // is the current session's tab label (updated by refreshNobiTabs).
+    // No menu actions: new session stays on the tabs-bar "+" — the FAB
+    // was removed as a duplicate (its 4 actions all live in the drawer).
+    private void setupNobiToolbar() {
+        com.google.android.material.appbar.MaterialToolbar toolbar =
+            findViewById(R.id.nobi_toolbar);
+        if (toolbar == null) return;
+        toolbar.setNavigationOnClickListener(v -> {
+            if (getDrawer() != null)
+                getDrawer().openDrawer(android.view.Gravity.LEFT);
+        });
+        updateNobiToolbarSubtitle();
     }
 
-    private void applyNobiFabTint() {
-        View fab = findViewById(R.id.nobi_fab);
-        if (fab == null) return;
-        android.graphics.drawable.Drawable bg = fab.getBackground();
-        if (bg != null) {
-            bg = bg.mutate();
-            if (bg instanceof android.graphics.drawable.GradientDrawable) {
-                ((android.graphics.drawable.GradientDrawable) bg).setColor(nobiAccentColor());
+    // ---- v24 w49: drawer header version + M3 scrim (spec 3). The
+    // version is read from the real package info at runtime, never
+    // hardcoded. The scrim is the M3 32% black, set explicitly (the
+    // DrawerLayout default is 60% and was never set before). The black
+    // strip root fix is: full-bleed DrawerLayout (w48 removed the 3dp
+    // container margins) + 304dp drawer + explicit scrim + rounded
+    // trailing corners — no overlay hack, no hardcoded screen width.
+    private void setupNobiDrawerHeader() {
+        android.widget.TextView versionView = findViewById(R.id.nobi_drawer_version);
+        if (versionView != null) {
+            try {
+                String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                versionView.setText(version != null ? "v" + version : "");
+            } catch (Exception ignored) {
             }
         }
+        if (getDrawer() != null) getDrawer().setScrimColor(0x52000000);
+    }
+
+    private void updateNobiToolbarSubtitle() {
+        com.google.android.material.appbar.MaterialToolbar toolbar =
+            findViewById(R.id.nobi_toolbar);
+        if (toolbar == null) return;
+        String subtitle = null;
+        if (mNobiTabsController != null && getCurrentSession() != null)
+            subtitle = mNobiTabsController.getTabLabel(getCurrentSession());
+        toolbar.setSubtitle(subtitle);
     }
 
     // ---- v7 (88): drawer customization ----
@@ -1838,7 +1854,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         for (String key : raw.split(",")) {
             if (!key.isEmpty()) order.add(key);
         }
-        String[] defaults = new String[]{"new_window", "nobicode", "new_session",
+        // v24 w49: spec order — WORKSPACE (New Session first), TOOLS,
+        // APPLICATION. Saved user orders are preserved as-is.
+        String[] defaults = new String[]{"new_session", "new_window", "nobicode",
             "quick_commands", "find", "server", "session_tools", "output_editor",
             "permissions", "settings", "exit"};
         for (String key : defaults) if (!order.contains(key)) order.add(key);
@@ -1876,6 +1894,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
         for (View leftover : byKey.values()) menu.addView(leftover);
 
+        // v24 w49: M3 section labels (spec 3) — see insertNobiDrawerSectionLabels.
+        insertNobiDrawerSectionLabels(menu);
+
         // v9 (drawer footer): upstream Termux added a drawer footer bar
         // (drawer_buttons) holding KEYBOARD / NEW SESSION / NEW WINDOW
         // buttons, and setNewWindowButtonView() forces that bar VERTICAL
@@ -1891,6 +1912,41 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         if (drawerButtons != null) drawerButtons.setVisibility(View.GONE);
     }
 
+    // v24 w49: M3 section labels (spec 3). Labels are created here, not
+    // in XML: applyNobiDrawerCustomization() does removeAllViews() and
+    // only re-adds String-tagged rows, so XML labels would be dropped.
+    // A label shows only when at least one row of its group is visible;
+    // it carries a non-String (Integer) tag so the byKey map and the
+    // density pass ignore it, and it is re-created on every pass.
+    private void insertNobiDrawerSectionLabels(android.widget.LinearLayout menu) {
+        String[][] groups = {
+            {"WORKSPACE", "new_session", "new_window", "nobicode"},
+            {"TOOLS", "quick_commands", "find", "server", "session_tools", "output_editor"},
+            {"APPLICATION", "permissions", "settings", "exit"}
+        };
+        for (String[] group : groups) {
+            int firstVisible = -1;
+            for (int i = 1; i < group.length && firstVisible < 0; i++) {
+                for (int j = 0; j < menu.getChildCount(); j++) {
+                    View row = menu.getChildAt(j);
+                    if (group[i].equals(row.getTag()) && row.getVisibility() == View.VISIBLE) {
+                        firstVisible = j;
+                        break;
+                    }
+                }
+            }
+            if (firstVisible < 0) continue;
+            android.widget.TextView label = new android.widget.TextView(this);
+            label.setText(group[0]);
+            label.setTextAppearance(this, R.style.NobiDsDrawerSectionLabel);
+            int p16 = getResources().getDimensionPixelSize(R.dimen.nobi_ds_spacing_16);
+            int p8 = getResources().getDimensionPixelSize(R.dimen.nobi_ds_spacing_8);
+            label.setPadding(p16, p16, p16, p8);
+            label.setTag(Integer.valueOf(0x4E4F4249)); // "NOBI" marker
+            menu.addView(label, firstVisible);
+        }
+    }
+
     private android.graphics.drawable.Drawable mNobiDrawerOriginalBg = null;
 
     private void applyNobiDrawerDensityAndGlass() {
@@ -1900,6 +1956,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         int vertical = (int) ((compact ? 8 : 13) * getResources().getDisplayMetrics().density);
         for (int i = 0; i < menu.getChildCount(); i++) {
             View row = menu.getChildAt(i);
+            if (row.getTag() instanceof Integer) continue; // v24 w49: section label, not a row
             row.setPadding(row.getPaddingLeft(), vertical, row.getPaddingRight(), vertical);
         }
         View drawer = findViewById(R.id.left_drawer);
@@ -2006,6 +2063,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     // ---- v7 (70/81/82/83): terminal chrome setup ----
 
     private void setupNobiV7Chrome(Bundle savedInstanceState) {
+        // v24 w48: TopAppBar setup (nav icon + session subtitle).
+        setupNobiToolbar();
+        // v24 w49: drawer header version + M3 scrim.
+        setupNobiDrawerHeader();
         // Bottom bar (81): tabs cycle, editor, settings in one tap.
         View bottomBar = findViewById(R.id.nobi_bottom_bar);
         if (bottomBar != null) {
@@ -2021,36 +2082,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)));
             applyNobiBottomBarVisibility();
             applyNobiBottomBarTint();
-        }
-        // FAB (83): quick actions popup.
-        View fab = findViewById(R.id.nobi_fab);
-        if (fab != null) {
-            fab.setOnClickListener(v -> {
-                android.widget.PopupMenu menu = new android.widget.PopupMenu(this, fab);
-                menu.getMenu().add(getString(R.string.nobi_palette_new_session));
-                menu.getMenu().add(getString(R.string.nobi_palette_new_window));
-                menu.getMenu().add(getString(R.string.nobi_palette_editor));
-                menu.getMenu().add(getString(R.string.nobi_menu_settings));
-                menu.setOnMenuItemClickListener(item -> {
-                    String title = item.getTitle().toString();
-                    if (title.equals(getString(R.string.nobi_palette_new_session))) {
-                        mTermuxTerminalSessionActivityClient.addNewSession(false, null);
-                    } else if (title.equals(getString(R.string.nobi_palette_new_window))) {
-                        View row = findViewById(R.id.nobi_menu_new_window);
-                        if (row != null) row.performClick();
-                    } else if (title.equals(getString(R.string.nobi_palette_editor))) {
-                        ActivityUtils.startActivity(this,
-                            new Intent(this, com.nobidev.nobicode.MainActivity.class));
-                    } else {
-                        ActivityUtils.startActivity(this,
-                            new Intent(this, SettingsActivity.class));
-                    }
-                    return true;
-                });
-                menu.show();
-            });
-            applyNobiFabVisibility();
-            applyNobiFabTint();
         }
         // Gestures (82) on the tabs bar: fling left/right switches sessions,
         // fling down opens the drawer, double-tap on EMPTY bar space opens
@@ -2119,10 +2150,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             overlay.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
                 android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
-            overlay.setBackgroundColor(0xFF0A0F24);
+            overlay.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.nobi_ds_app_bg));
             overlay.setClickable(false);
             overlay.setFocusable(false);
-            int iconSize = (int) (132 * getResources().getDisplayMetrics().density);
+            int iconSize = getResources().getDimensionPixelSize(R.dimen.nobi_ds_intro_icon_size);
             android.widget.ImageView icon = new android.widget.ImageView(this);
             icon.setImageResource(R.drawable.nobi_app_icon);
             android.widget.FrameLayout.LayoutParams iconParams =
@@ -2131,8 +2162,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             overlay.addView(icon, iconParams);
             android.widget.TextView name = new android.widget.TextView(this);
             name.setText("NOBITA");
-            name.setTextColor(0xFF22D3EE);
-            name.setTextSize(22);
+            name.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.nobi_ds_accent));
+            name.setTextSize(16);
             name.setTypeface(null, android.graphics.Typeface.BOLD);
             name.setLetterSpacing(0.3f);
             android.widget.FrameLayout.LayoutParams nameParams =
@@ -2326,7 +2357,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             getString(R.string.nobi_tool_density),
             getString(R.string.nobi_tool_glass),
             getString(R.string.nobi_tool_bottom_bar),
-            getString(R.string.nobi_tool_fab),
             getString(R.string.nobi_tool_drawer_customize),
             getString(R.string.nobi_tool_terminal_font)};
         new AlertDialog.Builder(this)
@@ -2391,9 +2421,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                         toggleNobiBottomBar();
                         break;
                     case 19:
-                        toggleNobiFab();
-                        break;
-                    case 20:
                         showNobiDrawerCustomizeDialog();
                         break;
                     default:
@@ -2478,7 +2505,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                     getString(R.string.nobi_colour_blue),
                     getString(R.string.nobi_colour_grey)};
                 final Integer[] values = new Integer[]{
-                    null, 0xFF22D3EE, 0xFF8B5CF6, 0xFF34D399, 0xFFFBBF24,
+                    null, 0xFF25C2D8, 0xFF8B5CF6, 0xFF34D399, 0xFFFBBF24,
                     0xFFFB7185, 0xFFF472B6, 0xFF60A5FA, 0xFF9AA5D9};
                 Integer current = NobiTabsController.loadTabColors(this).get(session.mHandle);
                 int checked = 0;
@@ -2697,7 +2724,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         int pad = (int) (16 * getResources().getDisplayMetrics().density);
         input.setPadding(pad, pad, pad, pad);
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setTitle(R.string.nobi_app_locked_title)
             .setMessage(R.string.nobi_app_locked_message)
             .setView(input)
@@ -2792,13 +2819,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     }
 
 
-
-    private void setSettingsButtonView() {
-        ImageButton settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(v -> {
-            ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class));
-        });
-    }
 
     private void setNewSessionButtonView() {
         View newSessionButton = findViewById(R.id.new_session_button);
@@ -3112,6 +3132,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     public void refreshNobiTabs() {
         if (mNobiTabsController != null)
             mNobiTabsController.refreshTabs();
+        updateNobiToolbarSubtitle();
     }
 
     public boolean isVisible() {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v24 w48: hamburger nav icon, Material Symbols Rounded style
+     (3 rounded bars). Tinted with the design-system primary text
+     colour so it follows day/night. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/nobi_ds_text_primary">
+    <path
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M4,7h16 M4,12h16 M4,17h16" />
+</vector>

@@ -1,7 +1,7 @@
-# NobiTerminal v23 — full source snapshot
+# NobiTerminal v24 — full source snapshot
 
-This repo is the **complete patched app source tree for NobiTerminal v23**
-(the version shipped as the v23 APK on 2026-11-08). It exists so the app's
+This repo is the **complete patched app source tree for NobiTerminal v24**
+(the version shipped as the v24 APK on 2026-11-08). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
 > This snapshot is for viewing and editing. It is **not** the build route.
@@ -16,44 +16,45 @@ source can be browsed, understood, and edited by hand in one place.
 > in place for every version — no new repo per version. `main` always
 > holds the latest shipped version's tree; each version is also kept as a
 > lightweight tag (`v20`, `v21`, …). This file describes the tree at
-> `main` (v23). The v20, v21 and v22 trees are tags `v20`, `v21` and `v22`.
+> `main` (v24). The v20, v21, v22 and v23 trees are tags `v20`, `v21`, `v22` and `v23`.
 
 ## What this snapshot was made from (NEW pattern — plugin + base patches)
 
 - **Base:** upstream `termux/termux-app`
   `@8629e632fcb95da272221be327db653fb24befe9` (2026-09-26).
-- **Frozen base:** v23 is built on the frozen V19 base — generator branch
-  `v23-autorepo-all-repos` `@a99980eece17c1fb9ef98eec8112e95548b23dc1`, branched
-  from `v22-about-page` `@60e1823cccd9b762701c8baf775446dd69097f43`
+- **Frozen base:** v24 is built on the frozen V19 base — generator branch
+  `v24-ui-redesign` `@c42a3287`, branched
+  from `v23-autorepo-all-repos` `@a99980eece17c1fb9ef98eec8112e95548b23dc1`
   (itself from `v21-theme-batch` `@7885be2f41c114b256f0d95b17bfefc030c8a8c9`,
   from `v20-ui-refresh` `@d5f6cdd0770f3353afb4edd9c8e6817ee83cf95b`,
   from `frozen-v19-base` `@5df75ae247bdde23a3732afaaafbb69b7a4c4c1b`),
   which pins termux-app `8629e632` and termux-packages `f8f7bf3d488a`
   (see below). No latest-upstream tracking: the freeze order stands
   until Sam says the app is final.
-- **Patches, in generator order:** first all 55 Nobi plugin patches from
-  generator branch `v23-autorepo-all-repos`
-  `@a99980eece17c1fb9ef98eec8112e95548b23dc1`
-  (v22's 54 + one new autorepo patch, w46 — there is NO w21
-  patch, see below), then the **base patches** from the generator repo's
+- **Patches, in generator order:** first all 63 Nobi plugin patches from
+generator branch `v24-ui-redesign`
+`@c42a3287`
+(v23's 55 + eight new UI-redesign patches, w47–w54 — there is NO w21
+patch, see below), then the **base patches** from the generator repo's
   `f-droid-patches/app-patches/` dir — the same order the generator
   uses (`install_plugin` first, then `patch_apps`). All applied with GNU
   `patch -p1`. Plugin phase: 0 `.rej`, 0 `.orig`. Base phase: 0 `.rej`;
   `.orig` files from offset/fuzz were logged and deleted, exactly like
   the generator's `apply_patches` does.
-- **Shipped v23 APK for cross-reference:** 35,524,908 bytes,
-  SHA-256 `d4f8c3ac684a35957b8c483c54f2e5d06a845e25651d44d2b9476ee32f1f498c`,
-  generator run `42479632772` (cache HIT, 10 min 59 s — the dc47 seed
+- **Shipped v24 APK for cross-reference:** 35,536,514 bytes,
+  SHA-256 `f310f8c1d4803f8727e70c383e6cae5c7c45044df1cc1410cae47999288dd307`,
+  generator run `42486440921` (cache HIT, ~9 min 45 s — the dc47 seed
   published by the v20 build; no bootstrap patch changed, so the cache
-  key did not move and no new seed was published). Runs 1–4 failed
-  pre-compile on a degraded runner-egress path to services.gradle.org
-  (Gradle 9.8.2 download timeout); run 5 succeeded after egress
-  recovered — no code change between runs 1 and 5,
+  key did not move and no new seed was published). Run 1 failed at AAPT
+  resource linking (dotted style names need an explicit parent — fixed
+  by w52); run 2 failed at javac (two FAB call sites survived the FAB
+  removal — fixed by w53); run 3 succeeded, then was superseded by run 4
+  (w54 night-twin parity — verify_tree caught the day/night mismatch),
   signer
   SHA-256 fingerprint
   `B6:DA:01:48:0E:EF:D5:FB:F2:CD:37:71:B8:D1:02:1E:C7:91:30:4B:DD:6C:4B:F4:1D:3F:AA:BA:D4:8E:E5:E1`.
 
-### The 55 plugin patches, in apply order
+### The 63 plugin patches, in apply order
 
 1. `nobiterminal-app-name.patch`
 2. `nobiterminal-drawer-default.patch`
@@ -110,6 +111,14 @@ source can be browsed, understood, and edited by hand in one place.
 53. `nobiterminal-w44-hubs-match-settings.patch` (12,133 bytes)
 54. `nobiterminal-w45-about-page.patch` (8,896 bytes)
 55. `nobiterminal-w46-autorepo-all-repos.patch` (24,470 bytes)
+56. `nobiterminal-w47-design-system.patch` (11,681 bytes)
+57. `nobiterminal-w48-main-screen.patch` (23,107 bytes)
+58. `nobiterminal-w49-drawer.patch` (28,976 bytes)
+59. `nobiterminal-w50-extra-keys.patch` (11,331 bytes)
+60. `nobiterminal-w51-settings-dialogs.patch` (10,075 bytes)
+61. `nobiterminal-w52-style-names-fix.patch`
+62. `nobiterminal-w53-fab-removal-complete.patch`
+63. `nobiterminal-w54-night-twin-parity.patch`
 
 ### The 7 base patches — 5 applied, 2 out of scope (read this)
 
@@ -157,7 +166,56 @@ So this tree is the full CI tree **for the `termux-app` module**: every
 base-patch effect that lands inside `termux-app` is present; the two
 sibling-app-only patches have no effect on this module by construction.
 
-## What's new in v23 (vs v22) — autorepo: all repos auto-setup
+## What's new in v24 (vs v23) — complete UI redesign (all 6 phases)
+
+Sam's order: redesign the whole app UI in 6 phases (master spec
+`ui-redesign-6-phases-2026-11-08.txt`), keeping every feature working.
+Eight patches, w47–w54 (15 files changed, 5 new):
+
+- **Phase 1 — design system (w47):** central `nobi_ds_*` tokens — dark
+  palette `#0B0F19` app bg / `#080D1C` terminal bg / `#111827` surface /
+  `#182233` elevated / `#1B3543` selected / `#25C2D8` cyan accent, light
+  theme twin, 4dp spacing scale, component dimens, drawer/section/toolbar
+  styles. Brand cyan unified `#22D3EE` → `#25C2D8`.
+- **Phase 2 — main screen (w48):** 56dp MaterialToolbar (nav icon + app
+  name + session subtitle), tabs restyled (12dp radius, selected
+  `#1B3543`), terminal with 8dp margins on `#080D1C`, floating
+  new-session button REMOVED (its 4 actions all exist in drawer/tabs —
+  spec 2E), splash/intro mark 132dp → 64dp, new `NobiWelcome.java`
+  compacts the bootstrap motd on first open (7 lines → 3, greeting
+  preserved byte-for-byte), no-emulator black flash → `#080D1C`.
+- **Phase 3 — drawer (w49):** 304dp, 24dp trailing corners, compact header
+  (transparent N mark + "Nobi Terminal" + "Developer workspace" + real
+  version), spec order (New Session first), groups WORKSPACE / TOOLS /
+  APPLICATION, 54dp rows, explicit M3 scrim. Black-strip fix at root:
+  full-bleed DrawerLayout + 304dp + scrim + rounded corners.
+- **Phase 4 — extra keys (w50):** keycaps 8dp radius with 1dp outline,
+  44dp rows, 6dp horizontal gaps, pressed states; dispatch, macros,
+  modifiers, repeat and all 28 dispatchable codes untouched.
+- **Phase 5 — settings/dialogs (w51):** root settings regrouped
+  GENERAL / TERMINAL / KEYBOARD / ADVANCED (all 17 rows, keys, defaults
+  and fragments verified identical by multiset compare; no SESSIONS group
+  exists — no root-level session setting was invented), dialog corners
+  20dp, exit + app-lock dialogs now `MaterialAlertDialogBuilder`.
+- **Phase 6 — fix rounds (w52, w53, w54):** w52 renames the four `NobiDs.*`
+  styles to dot-free names (AAPT implicit-parent rule — run 1 failed on
+  it); w53 completes the FAB removal (accent-dialog call, `toggleNobiFab()`
+  method, Session Tools item 19 + switch renumber — run 2 failed on it);
+  w54 mirrors the w47 design-system tokens into the night theme twin
+  (extra-keys colors + window background — verify_tree caught the day/night
+  mismatch before shipping).
+- **Not done (framework limits, recorded in AUDIT.md):** no bundled
+  Roboto/JetBrains Mono (no font files in the tree — terminal still uses
+  `Typeface.MONOSPACE` or `~/.termux/font.ttf`); no `NavigationView`
+  (drawer hosts the sessions list + reorder logic); no BottomSheet /
+  Snackbar (none exist in the codebase); no edge-to-edge migration (the
+  manual keyboard-margin hack stays); the `getCursorY()` −40px mismatch
+  and `setLongPressRepeatDelay()` bugs deliberately preserved.
+- **Visual verdict still needs Sam's phone:** the redesign is verified
+  inside the APK (resources, layouts, dex) — no screen is claimed to
+  look right until he sees it.
+
+v23's autorepo (below) is unchanged in v24:
 
 Sam's order: first time the app opens, ALL Nobi apt repos should be set up
 automatically — hardcoded, like Termux's own defaults — with the `apt
@@ -196,8 +254,9 @@ Termux remains. One patch, w46, 2 files (`NobiRepoSetup.java` +
   correct and no official line remains; a deleted list is recreated on
   the next open; a wrong list is overwritten with the canonical line.
   All file work is off the UI thread; the terminal is never blocked.
-- **Everything else is v22 as-is:** the About page rebuild (w45), the
-  w30–w44 theme batch, w27 extra-keys navy, w28 drawer ripple + cyan
+- **Everything else is v23 as-is:** the v23 autorepo (w46 — 10 hardcoded
+  repo lists, visible apt update + retry), the About page rebuild (w45),
+  the w30–w44 theme batch, w27 extra-keys navy, w28 drawer ripple + cyan
   icons, w29 Nobita name strings, w26 word-highlight fix, w25
   current-line fix, w20 gutter tokens, w22 breadcrumb, w23 run-output
   errors, w24 cyan secondary, and the verified pre-existing save/dirty
@@ -217,7 +276,7 @@ Termux remains. One patch, w46, 2 files (`NobiRepoSetup.java` +
 The 11 legacy launcher PNGs (`mipmap-*/ic_launcher.png`,
 `mipmap-*/ic_launcher_round.png`) plus `drawable/banner.png` are
 **present in this tree** (upstream files, 11/11 counted) but **absent
-from the shipped v23 APK** — the generator deletes them at build time
+from the shipped v24 APK** — the generator deletes them at build time
 (`remove_dead_nobi_assets()`, before Gradle). Do NOT claim tree == APK
 for these 11 files.
 
@@ -232,15 +291,15 @@ for these 11 files.
   `f8f7bf3d488a`, cache HIT on the dc47 seed published by the v20
   build).
 - **Signing:** `app/testkey_untrusted.jks` is in the tree; its cert
-  fingerprint matches the shipped v23 APK signer exactly, so a debug
-  build from this tree installs over the shipped v23.
+  fingerprint matches the shipped v24 APK signer exactly, so a debug
+  build from this tree installs over the shipped v24.
 - **ACS:** `main` will NOT build directly in a phone IDE. With the base
   patches, TWO modules still wire `externalNativeBuild` ndkBuild
   (`terminal-emulator` → `libtermux`, `termux-shared` →
   `liblocal-socket`) — the `app` module no longer does (see
   `local-bootstraps` above). The phone IDE cannot run the inner
   `ndk-build` (v4 failed at `:termux-shared:configureNdkBuildDebug`,
-  exit 126). No `acs-prebuilt` branch exists for v23. Gradle wrapper jar IS in
+  exit 126). No `acs-prebuilt` branch exists for v24. Gradle wrapper jar IS in
   the tree, so ACS import does not hang on the wrapper.
 - **Upstream README:** upstream's `README.md` was renamed to
   `README_UPSTREAM.md` (content byte-identical); this file is the

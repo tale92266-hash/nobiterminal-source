@@ -1,11 +1,12 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        app:icon="@drawable/nobi_pref_gear"
-        app:key="termux"
-        app:title="@string/termux_preferences_title"
-        app:summary="@string/termux_preferences_summary"
-        app:fragment="com.termux.app.fragments.settings.TermuxPreferencesFragment"/>
+    <!-- v24 w51: settings regrouped into the spec Phase 5 groups
+         (GENERAL / TERMINAL / KEYBOARD / ADVANCED). Presentational only:
+         every row keeps its original key, default, icon, fragment and
+         summary — nothing is renamed, removed or re-defaulted. There is
+         no SESSIONS group: no root-level session setting exists in this
+         build, and no fake setting is invented to fill one. The hidden
+         plugin rows stay top-level and invisible, exactly as before. -->
 
     <Preference
         app:icon="@drawable/nobi_pref_server"
@@ -39,44 +40,22 @@
         app:isPreferenceVisible="false"
         app:fragment="com.termux.app.fragments.settings.TermuxWidgetPreferencesFragment"/>
 
-    <Preference
-        app:icon="@drawable/nobi_pref_info"
-        app:key="about"
-        app:title="@string/about_preference_title"
-        app:persistent="false"/>
-    <!-- app:layout="@layout/preference_markdown_text" -->
+    <PreferenceCategory
+        app:key="nobi_group_terminal"
+        app:title="@string/nobi_settings_group_terminal">
 
-    <Preference
-        app:icon="@drawable/nobi_pref_share"
-        app:key="donate"
-        app:title="@string/donate_preference_title"
-        app:persistent="false"
-        app:isPreferenceVisible="false"/>
+        <Preference
+            app:icon="@drawable/nobi_pref_gear"
+            app:key="termux"
+            app:title="@string/termux_preferences_title"
+            app:summary="@string/termux_preferences_summary"
+            app:fragment="com.termux.app.fragments.settings.TermuxPreferencesFragment"/>
+
+    </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="nobi_terminal"
-        app:title="@string/nobi_settings_category_title">
-
-        <Preference
-            app:icon="@drawable/nobi_pref_copy"
-            app:key="nobi_backup"
-            app:title="@string/nobi_backup_preference_title"
-            app:summary="@string/nobi_backup_preference_summary"
-            app:persistent="false"/>
-
-        <Preference
-            app:icon="@drawable/nobi_pref_download"
-            app:key="nobi_restore"
-            app:title="@string/nobi_restore_preference_title"
-            app:summary="@string/nobi_restore_preference_summary"
-            app:persistent="false"/>
-
-        <Preference
-            app:icon="@drawable/nobi_pref_code"
-            app:key="nobi_dev_setup"
-            app:title="@string/nobi_dev_setup_preference_title"
-            app:summary="@string/nobi_dev_setup_preference_summary"
-            app:persistent="false"/>
+        app:key="nobi_group_general"
+        app:title="@string/nobi_settings_group_general">
 
         <Preference
             app:icon="@drawable/nobi_pref_theme"
@@ -84,27 +63,6 @@
             app:title="@string/nobi_theme_preference_title"
             app:summary="@string/nobi_theme_preference_summary"
             app:fragment="com.termux.app.fragments.settings.nobi.ThemePreferencesFragment"/>
-
-        <Preference
-            app:icon="@drawable/nobi_pref_keyboard"
-            app:key="nobi_extra_keys"
-            app:title="@string/nobi_extra_keys_preference_title"
-            app:summary="@string/nobi_extra_keys_preference_summary"
-            app:fragment="com.termux.app.fragments.settings.nobi.ExtraKeysPreferencesFragment"/>
-
-        <CheckBoxPreference
-            app:icon="@drawable/nobi_pref_power"
-            app:key="nobi_wake_lock"
-            app:title="@string/nobi_wake_lock_preference_title"
-            app:summary="@string/nobi_wake_lock_preference_summary"
-            app:defaultValue="false"/>
-
-        <Preference
-            app:icon="@drawable/nobi_pref_lock"
-            app:key="nobi_app_lock"
-            app:title="@string/nobi_app_lock_preference_title"
-            app:summary="@string/nobi_app_lock_preference_summary"
-            app:persistent="false"/>
 
         <CheckBoxPreference
             app:icon="@drawable/nobi_pref_list"
@@ -130,5 +88,73 @@
             app:defaultValue="default"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="nobi_group_keyboard"
+        app:title="@string/nobi_settings_group_keyboard">
+
+        <Preference
+            app:icon="@drawable/nobi_pref_keyboard"
+            app:key="nobi_extra_keys"
+            app:title="@string/nobi_extra_keys_preference_title"
+            app:summary="@string/nobi_extra_keys_preference_summary"
+            app:fragment="com.termux.app.fragments.settings.nobi.ExtraKeysPreferencesFragment"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="nobi_group_advanced"
+        app:title="@string/nobi_settings_group_advanced">
+
+        <Preference
+            app:icon="@drawable/nobi_pref_copy"
+            app:key="nobi_backup"
+            app:title="@string/nobi_backup_preference_title"
+            app:summary="@string/nobi_backup_preference_summary"
+            app:persistent="false"/>
+
+        <Preference
+            app:icon="@drawable/nobi_pref_download"
+            app:key="nobi_restore"
+            app:title="@string/nobi_restore_preference_title"
+            app:summary="@string/nobi_restore_preference_summary"
+            app:persistent="false"/>
+
+        <Preference
+            app:icon="@drawable/nobi_pref_code"
+            app:key="nobi_dev_setup"
+            app:title="@string/nobi_dev_setup_preference_title"
+            app:summary="@string/nobi_dev_setup_preference_summary"
+            app:persistent="false"/>
+
+        <CheckBoxPreference
+            app:icon="@drawable/nobi_pref_power"
+            app:key="nobi_wake_lock"
+            app:title="@string/nobi_wake_lock_preference_title"
+            app:summary="@string/nobi_wake_lock_preference_summary"
+            app:defaultValue="false"/>
+
+        <Preference
+            app:icon="@drawable/nobi_pref_lock"
+            app:key="nobi_app_lock"
+            app:title="@string/nobi_app_lock_preference_title"
+            app:summary="@string/nobi_app_lock_preference_summary"
+            app:persistent="false"/>
+
+    </PreferenceCategory>
+
+    <Preference
+        app:icon="@drawable/nobi_pref_info"
+        app:key="about"
+        app:title="@string/about_preference_title"
+        app:persistent="false"/>
+    <!-- app:layout="@layout/preference_markdown_text" -->
+
+    <Preference
+        app:icon="@drawable/nobi_pref_share"
+        app:key="donate"
+        app:title="@string/donate_preference_title"
+        app:persistent="false"
+        app:isPreferenceVisible="false"/>
 
 </PreferenceScreen>

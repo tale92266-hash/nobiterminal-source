@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- v24 w47: design-system dimensions. 4dp spacing scale + component
+         metrics from the redesign spec. One source of truth: layouts and
+         code must use these instead of hardcoded dp values. -->
+    <dimen name="nobi_ds_spacing_4">4dp</dimen>
+    <dimen name="nobi_ds_spacing_8">8dp</dimen>
+    <dimen name="nobi_ds_spacing_12">12dp</dimen>
+    <dimen name="nobi_ds_spacing_16">16dp</dimen>
+    <dimen name="nobi_ds_spacing_20">20dp</dimen>
+    <dimen name="nobi_ds_spacing_24">24dp</dimen>
+    <dimen name="nobi_ds_corner_small">8dp</dimen>
+    <dimen name="nobi_ds_corner_medium">12dp</dimen>
+    <dimen name="nobi_ds_corner_large">16dp</dimen>
+    <dimen name="nobi_ds_corner_xl">20dp</dimen>
+    <dimen name="nobi_ds_corner_xxl">24dp</dimen>
+    <!-- TopAppBar (spec 2A). -->
+    <dimen name="nobi_ds_toolbar_height">56dp</dimen>
+    <!-- Session tabs bar (spec 2B). -->
+    <dimen name="nobi_ds_tabs_bar_height">40dp</dimen>
+    <dimen name="nobi_ds_tab_corner">12dp</dimen>
+    <!-- Navigation drawer (spec 3). -->
+    <dimen name="nobi_ds_drawer_width">304dp</dimen>
+    <dimen name="nobi_ds_drawer_item_height">54dp</dimen>
+    <dimen name="nobi_ds_drawer_icon_size">24dp</dimen>
+    <dimen name="nobi_ds_drawer_icon_text_gap">16dp</dimen>
+    <dimen name="nobi_ds_drawer_corner">24dp</dimen>
+    <!-- Extra keys (spec 4). -->
+    <dimen name="nobi_ds_extra_key_row_height">44dp</dimen>
+    <dimen name="nobi_ds_extra_key_gap">3dp</dimen>
+    <dimen name="nobi_ds_extra_key_corner">8dp</dimen>
+    <!-- Terminal workspace (spec 2C). -->
+    <dimen name="nobi_ds_terminal_padding">8dp</dimen>
+    <!-- Branding (spec 2D): ~50% smaller than the 132dp v7 marks. -->
+    <dimen name="nobi_ds_splash_mark_size">64dp</dimen>
+    <dimen name="nobi_ds_intro_icon_size">64dp</dimen>
+</resources>

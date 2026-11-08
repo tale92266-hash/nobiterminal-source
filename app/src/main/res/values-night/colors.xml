@@ -4,4 +4,21 @@
          periwinkle secondary text). nobi_navy/nobi_cyan/nobi_periwinkle resolve from values/. -->
     <color name="nobi_body_surface">#FF101730</color>
     <color name="nobi_secondary_text">#FF9AA5D9</color>
+    <!-- v24 w47: design-system tokens, DARK mode values = the spec palette. -->
+    <color name="nobi_ds_app_bg">#FF0B0F19</color>
+    <color name="nobi_ds_terminal_bg">#FF080D1C</color>
+    <color name="nobi_ds_surface">#FF111827</color>
+    <color name="nobi_ds_elevated">#FF182233</color>
+    <color name="nobi_ds_selected">#FF1B3543</color>
+    <color name="nobi_ds_accent">@color/nobi_cyan</color>
+    <color name="nobi_ds_text_primary">#FFE5EDF6</color>
+    <color name="nobi_ds_text_secondary">#FFA5B4C7</color>
+    <color name="nobi_ds_text_tertiary">#FF65748A</color>
+    <color name="nobi_ds_outline">#FF263449</color>
+    <color name="nobi_ds_success">#FFA6D9B8</color>
+    <color name="nobi_ds_warning">#FFE9BC75</color>
+    <color name="nobi_ds_error">#FFF08C8C</color>
+    <color name="nobi_ds_drawer_bg">#FF0A0F24</color>
+    <color name="nobi_ds_drawer_text">#FFE5EDF6</color>
+    <color name="nobi_ds_drawer_text_secondary">#FF9AA5D9</color>
 </resources>

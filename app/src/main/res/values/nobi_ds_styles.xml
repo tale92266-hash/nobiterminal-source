@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- v24 w47: design-system styles (spec Phase 1). Applied by the
+         w48/w49 layout patches; kept separate from upstream styles.xml. -->
+    <style name="NobiDsDrawerRow">
+        <item name="android:minHeight">@dimen/nobi_ds_drawer_item_height</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <item name="android:paddingStart">@dimen/nobi_ds_spacing_16</item>
+        <item name="android:paddingEnd">@dimen/nobi_ds_spacing_16</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    <style name="NobiDsDrawerSectionLabel">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/nobi_ds_drawer_text_secondary</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:paddingStart">@dimen/nobi_ds_spacing_16</item>
+        <item name="android:paddingEnd">@dimen/nobi_ds_spacing_16</item>
+        <item name="android:paddingTop">@dimen/nobi_ds_spacing_16</item>
+        <item name="android:paddingBottom">@dimen/nobi_ds_spacing_8</item>
+    </style>
+    <style name="NobiDsToolbarTitle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/nobi_ds_text_primary</item>
+    </style>
+    <style name="NobiDsToolbarSubtitle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/nobi_ds_text_secondary</item>
+    </style>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v24 w47: drawer background — navy in both modes (w36) with 24dp
+     rounded TRAILING corners only (spec 3). The leading edge stays square
+     against the screen edge. Glass look swaps this drawable at runtime
+     (applyNobiDrawerDensityAndGlass caches it as the "original" bg). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/nobi_ds_drawer_bg" />
+    <corners
+        android:topRightRadius="@dimen/nobi_ds_drawer_corner"
+        android:bottomRightRadius="@dimen/nobi_ds_drawer_corner" />
+</shape>

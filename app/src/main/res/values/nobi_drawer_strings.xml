@@ -6,6 +6,8 @@
     <string name="nobi_menu_permissions">Permissions</string>
     <string name="nobi_menu_settings">Settings</string>
     <string name="nobi_menu_exit">Exit</string>
+    <!-- v24 w49: drawer header subtitle (spec 3). -->
+    <string name="nobi_drawer_subtitle">Developer workspace</string>
     <!-- v6 batch 1-16 drawer rows. -->
     <string name="nobi_menu_quick_commands">Quick Commands</string>
     <string name="nobi_menu_find">Find in Terminal</string>

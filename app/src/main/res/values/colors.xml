@@ -5,8 +5,11 @@
     <color name="nobi_splash_background">#070B1F</color>
     <!-- v9: drawer + keys-bar navy, same as the tabs bar (#FF0A0F24). -->
     <color name="nobi_navy">#FF0A0F24</color>
-    <!-- v20: Nobi cyan (matches notification + splash name) + lighter-navy pressed surface for extra keys. -->
-    <color name="nobi_cyan">#FF22D3EE</color>
+    <!-- v20: Nobi cyan + lighter-navy pressed surface for extra keys.
+         v24 w47: unified on the spec accent #25C2D8 (was #22D3EE; the
+         terminal cursor default 0xff22d3ee in TerminalColorScheme is a
+         separate hardcoded constant and is untouched). -->
+    <color name="nobi_cyan">#FF25C2D8</color>
     <color name="nobi_key_pressed">#FF1E2C55</color>
     <!-- v21 w30/w31: periwinkle secondary text for dark surfaces (never grey). -->
     <color name="nobi_periwinkle">#FF9AA5D9</color>
@@ -14,7 +17,29 @@
     <color name="nobi_body_surface">#FFF4F6FC</color>
     <color name="nobi_secondary_text">@color/nobi_navy</color>
     <!-- v21 w38: 40% cyan selection highlight for the terminal text-input bar. -->
-    <color name="nobi_cyan_highlight">#6622D3EE</color>
+    <color name="nobi_cyan_highlight">#6625C2D8</color>
     <!-- v21 w39: scrollbar thumb tint, >=3:1 on black (5.49:1) and white (3.83:1). -->
     <color name="nobi_scroll_thumb">#FF6B7FC7</color>
+    <!-- v24 w47: design-system tokens, LIGHT mode values (night twins in
+         values-night/colors.xml). The dark palette is the spec palette
+         (#0B0F19 app bg, #080D1C terminal bg, #111827 surface, #182233
+         elevated, #1B3543 selected, #25C2D8 accent, #E5EDF6/#A5B4C7/
+         #65748A text, #263449 outline); light values are the matching
+         coherent light theme. Drawer stays navy in BOTH modes (v21 w36). -->
+    <color name="nobi_ds_app_bg">#FFF4F6FC</color>
+    <color name="nobi_ds_terminal_bg">#FFF8FAFC</color>
+    <color name="nobi_ds_surface">#FFFFFFFF</color>
+    <color name="nobi_ds_elevated">#FFF1F5F9</color>
+    <color name="nobi_ds_selected">#FFE0F2FE</color>
+    <color name="nobi_ds_accent">@color/nobi_cyan</color>
+    <color name="nobi_ds_text_primary">#FF0F172A</color>
+    <color name="nobi_ds_text_secondary">#FF475569</color>
+    <color name="nobi_ds_text_tertiary">#FF94A3B8</color>
+    <color name="nobi_ds_outline">#FFE2E8F0</color>
+    <color name="nobi_ds_success">#FF166534</color>
+    <color name="nobi_ds_warning">#FF92400E</color>
+    <color name="nobi_ds_error">#FFB91C1C</color>
+    <color name="nobi_ds_drawer_bg">#FF0A0F24</color>
+    <color name="nobi_ds_drawer_text">#FFFFFFFF</color>
+    <color name="nobi_ds_drawer_text_secondary">#FF9AA5D9</color>
 </resources>

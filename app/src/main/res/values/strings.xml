@@ -246,6 +246,11 @@
 
     <!-- NobiTerminal Preferences -->
     <string name="nobi_settings_category_title">NobiTerminal</string>
+    <!-- v24 w51: Phase 5 settings group titles. -->
+    <string name="nobi_settings_group_general">General</string>
+    <string name="nobi_settings_group_terminal">Terminal</string>
+    <string name="nobi_settings_group_keyboard">Keyboard</string>
+    <string name="nobi_settings_group_advanced">Advanced</string>
 
     <string name="nobi_backup_preference_title">Backup My Setup</string>
     <string name="nobi_backup_preference_summary">Save your installed packages list and settings to a backup file</string>

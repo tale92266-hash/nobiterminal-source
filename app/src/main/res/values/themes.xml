@@ -91,7 +91,10 @@
         <item name="colorSecondary">@color/nobi_cyan</item>
         <item name="colorControlActivated">@color/nobi_cyan</item>
 
-        <item name="android:windowBackground">@color/black</item>
+        <!-- v24 w47: window bg = design-system terminal bg (#080D1C dark /
+             #F8FAFC light) instead of pure black; also the no-emulator
+             fallback paint in TerminalView (w48) uses the same colour. -->
+        <item name="android:windowBackground">@color/nobi_ds_terminal_bg</item>
 
         <!-- Avoid action mode toolbar pushing down terminal content when
              selecting text on pre-6.0 (non-floating toolbar). -->
@@ -110,11 +113,20 @@
         <item name="termuxActivityDrawerBackground">@color/nobi_navy</item>
         <item name="termuxActivityDrawerImageTint">@color/white</item>
 
-        <!-- Extra keys colors. -->
-        <item name="extraKeysButtonTextColor">@color/white</item>
-        <item name="extraKeysButtonActiveTextColor">@color/nobi_cyan</item>
-        <item name="extraKeysButtonBackgroundColor">@color/nobi_navy</item>
-        <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_key_pressed</item>
+        <!-- Extra keys colors (v24 w47: design-system tokens). Resting key
+             bg = elevated surface (#182233 dark / #F1F5F9 light), pressed/
+             active = selected surface (#1B3543 / #E0F2FE), text resolves
+             per-mode. nobi_key_pressed stays defined but unused here. -->
+        <item name="extraKeysButtonTextColor">@color/nobi_ds_text_primary</item>
+        <item name="extraKeysButtonActiveTextColor">@color/nobi_ds_accent</item>
+        <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_elevated</item>
+        <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_ds_selected</item>
+        <item name="extraKeysButtonOutlineColor">@color/nobi_ds_outline</item>
+
+        <!-- v24 w47: surface roles for dialogs/menus (mode-resolved). -->
+        <item name="colorSurface">@color/nobi_ds_surface</item>
+        <item name="colorOnSurface">@color/nobi_ds_text_primary</item>
+        <item name="colorError">@color/nobi_ds_error</item>
     </style>
 
     <!-- NobiTerminal launch theme: branded splash window background, replaced
