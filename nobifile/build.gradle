@@ -20,6 +20,11 @@
 //  - Kotlin stdlib pinned to 2.2.21 (the terminal project's Kotlin plugin).
 
 apply plugin: 'com.android.library'
+// v29: kotlin-android is REQUIRED — without it there is no compileDebugKotlin
+// task and the 689 .kt files are never compiled (javac then fails with 200
+// "package me.zhanghai.android.files.* does not exist"). kotlin-parcelize
+// alone does not enable Kotlin compilation on kotlin-gradle-plugin 2.2.21.
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 android {
