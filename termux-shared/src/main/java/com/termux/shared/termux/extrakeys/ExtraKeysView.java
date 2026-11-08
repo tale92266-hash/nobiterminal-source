@@ -441,7 +441,7 @@ public final class ExtraKeysView extends GridLayout {
         setColumnCount(maximumLength(buttons));
 
         // v24 w50: 3dp gap on each side of every key (6dp between keys),
-        // 1dp vertical so keys stay 42dp tall in a 44dp row. Row height
+        // 1dp vertical so keys stay 34dp tall in a 36dp row. Row height
         // is unchanged (rowSpec FILL), and no key is added, removed,
         // reordered or re-handled.
         int keyGapPx = (int) (3f * getResources().getDisplayMetrics().density + 0.5f);

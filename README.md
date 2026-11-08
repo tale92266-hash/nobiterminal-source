@@ -1,7 +1,7 @@
-# NobiTerminal v27 — full source snapshot
+# NobiTerminal v28 — full source snapshot
 
-This repo is the **complete app source tree for NobiTerminal v27**
-(the version shipped as the v27 APK on 2026-11-08). It exists so the app's
+This repo is the **complete app source tree for NobiTerminal v28**
+(the version shipped as the v28 APK on 2026-11-08). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
 > This snapshot **is** the build route (since the 2026-11-08 migration to
@@ -16,13 +16,13 @@ source can be browsed, understood, and edited by hand in one place.
 > in place for every version — no new repo per version. `main` always
 > holds the latest shipped version's tree; each version is also kept as a
 > lightweight tag (`v20`, `v21`, …). This file describes the tree at
-> `main` (v27). The v20–v26 trees are tags `v20`–`v26`.
+> `main` (v28). The v20–v27 trees are tags `v20`–`v27`.
 
 ## What this snapshot was made from (NEW pattern — plugin + base patches)
 
 - **Base:** upstream `termux/termux-app`
   `@8629e632fcb95da272221be327db653fb24befe9` (2026-09-26).
-- **Frozen base:** v27 is built directly from this tree (direct-source
+- **Frozen base:** v28 is built directly from this tree (direct-source
   builds since the 2026-11-08 migration — no generator patches since
   v24). The tree itself is built on the frozen V19 base — generator branch
   `v24-ui-redesign` `@c42a3287`, branched

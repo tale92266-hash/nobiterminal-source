@@ -27,7 +27,7 @@
     <dimen name="nobi_ds_drawer_icon_text_gap">16dp</dimen>
     <dimen name="nobi_ds_drawer_corner">24dp</dimen>
     <!-- Extra keys (spec 4). -->
-    <dimen name="nobi_ds_extra_key_row_height">44dp</dimen>
+    <dimen name="nobi_ds_extra_key_row_height">36dp</dimen>
     <dimen name="nobi_ds_extra_key_gap">3dp</dimen>
     <dimen name="nobi_ds_extra_key_corner">8dp</dimen>
     <!-- Terminal workspace (spec 2C). -->

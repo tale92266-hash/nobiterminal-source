@@ -73,6 +73,8 @@ import com.termux.view.TerminalViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -294,6 +296,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
 
         setTermuxTerminalViewAndClients();
+
+        // v28: freeze the terminal wallpaper height (see method docs).
+        freezeTerminalWallpaperHeight();
 
         setTerminalToolbarView(savedInstanceState);
 
@@ -642,6 +647,50 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         int marginHorizontal = mProperties.getTerminalMarginHorizontal();
         int marginVertical = mProperties.getTerminalMarginVertical();
         ViewUtils.setLayoutMarginsInDp(relativeLayout, marginHorizontal, marginVertical, marginHorizontal, marginVertical);
+    }
+
+    /**
+     * v28: pin the terminal wallpaper to its keyboard-closed height so the
+     * soft keyboard never re-crops it. The window uses adjustResize (set in
+     * the manifest and again at runtime by TermuxTerminalViewClient), so
+     * opening the keyboard shrinks terminal_view_container; the wallpaper
+     * ImageView is match_parent, so centerCrop would re-scale/re-centre it
+     * on every keyboard open/close and the background would visibly jump.
+     * Instead, whenever the container is laid out while the keyboard is
+     * hidden, the ImageView's height is frozen to the container's height.
+     * While the keyboard is open the frozen height is kept, so the visible
+     * part of the wallpaper is pixel-identical to the keyboard-closed state
+     * (only the part below the visible area is clipped). Rotation and the
+     * tab-note row re-pin automatically on the next keyboard-closed layout.
+     * adjustPan was considered and rejected: TerminalView supplies no
+     * cursor-anchor info, so the framework would pan from the full-screen
+     * view rect and the extra-keys bar (below that rect) would end up
+     * behind the keyboard; adjustResize keeps the bar above the keyboard,
+     * exactly as before.
+     */
+    private void freezeTerminalWallpaperHeight() {
+        final View wallpaperView = findViewById(R.id.nobi_terminal_wallpaper_view);
+        final View terminalContainer = findViewById(R.id.terminal_view_container);
+        if (wallpaperView == null || terminalContainer == null) return;
+
+        terminalContainer.addOnLayoutChangeListener((v, left, top, right, bottom,
+                                                     oldLeft, oldTop, oldRight, oldBottom) -> {
+            int height = bottom - top;
+            if (height <= 0) return;
+
+            // Only re-pin while the keyboard is hidden; while it is open
+            // the container is shrunk and must not become the frozen size.
+            // A null root insets (before the first dispatch) means "not
+            // yet known" — wait for the next layout instead of guessing.
+            WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(terminalContainer);
+            if (rootInsets == null || rootInsets.isVisible(WindowInsetsCompat.Type.ime())) return;
+
+            ViewGroup.LayoutParams layoutParams = wallpaperView.getLayoutParams();
+            if (layoutParams.height != height) {
+                layoutParams.height = height;
+                wallpaperView.setLayoutParams(layoutParams);
+            }
+        });
     }
 
 

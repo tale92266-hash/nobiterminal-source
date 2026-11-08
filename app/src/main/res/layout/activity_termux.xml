@@ -100,26 +100,27 @@
                  default bg; only reverse-video fills the canvas). The
                  FrameLayout gives the reference's rounded card (12dp)
                  + 1dp outline via nobi_terminal_card.xml and clips
-                 children to it. 4dp margins all round (the reference
-                 card sits just inside the screen edges); the old 8dp
-                 TerminalView margins are gone — that + the old bad-crop
-                 wallpaper (black top band) were the two causes of the
-                 black top region and the excessive side margins. The
-                 no-emulator fallback in TerminalView.onDraw only paints
-                 solid when there is no background at all, and the
-                 transparent background counts as one — so a session
-                 switch never flashes opaque over the wallpaper. -->
+                 children to it. v28: the container margins are 0dp on
+                 every side (full-bleed — the old 4dp margins plus the
+                 3dp default terminal-margin-horizontal property were
+                 the side inset in the v27 screenshot), and the
+                 wallpaper ImageView's height is frozen at runtime by
+                 TermuxActivity.freezeTerminalWallpaperHeight() to its
+                 keyboard-closed height, so opening the keyboard
+                 (adjustResize) never re-crops it. The no-emulator
+                 fallback in TerminalView.onDraw only paints solid when
+                 there is no background at all, and the transparent
+                 background counts as one — so a session switch never
+                 flashes opaque over the wallpaper. -->
             <FrameLayout
                 android:id="@+id/terminal_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
                 android:background="@drawable/nobi_terminal_card"
                 android:clipToOutline="true">
 
                 <ImageView
+                    android:id="@+id/nobi_terminal_wallpaper_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
