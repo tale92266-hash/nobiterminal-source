@@ -1,0 +1,131 @@
+name: Build NobiTerminal app (direct source)
+
+# Direct-source build (Sam's order, 2026-11-08): this repo IS the source tree
+# (frozen V19 termux-app + all patches applied, package com.termux in-tree).
+# This workflow renames to com.nobiterminal, restores the cached bootstrap,
+# and compiles — no patch step, no generator. The old generator/patch route
+# is retired for app changes. See DIRECT_BUILD.md for the full process.
+#
+# Frozen V19 base is preserved automatically: the tree itself is the frozen
+# V19 state + patches (tag v24); this workflow never clones upstream.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Snapshot pushes land as several chunk commits in a row; only the last
+# one needs a full build — cancel the earlier runs instead of building 8x.
+concurrency:
+  group: nobi-direct-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Restore Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper
+          key: gradle-direct-${{ runner.os }}-gradle-9
+          restore-keys: |
+            gradle-direct-${{ runner.os }}-
+
+      # settings.gradle includes ':termux-am-library', which is NOT in this
+      # tree (same as the generator: it clones it and moves the inner dir
+      # into the app tree). Cloned at latest, exactly like the generator
+      # did for v4..v24.
+      - name: Fetch termux-am-library
+        run: |
+          set -e
+          git clone --depth 1 https://github.com/termux/termux-am-library.git /tmp/am-library
+          mv /tmp/am-library/termux-am-library ./termux-am-library
+          ls termux-am-library
+
+      # Cached bootstrap, sha256-verified (same asset + key the generator
+      # used: dc47 seed, 21,554,576 bytes, tag bootstrap-cache-test on
+      # tale92266-hash/nobiterminal). NEVER build an APK from an
+      # unverified bootstrap — any missing file or sha mismatch fails here.
+      # No full bootstrap rebuild in this workflow: if the asset is gone,
+      # this step fails loudly instead of silently building for 60+ min.
+      - name: Restore cached bootstrap (Release asset)
+        run: |
+          set -e
+          ASSET="bootstrap-aarch64-f8f7bf3d488a-8629e632fcb9-dc474e2e8a5e-59a8c6e3-com.nobiterminal.tar.gz"
+          mkdir -p .bootstrap-cache
+          echo "Looking for bootstrap cache asset: $ASSET (tag bootstrap-cache-test on tale92266-hash/nobiterminal)"
+          gh release download bootstrap-cache-test -R tale92266-hash/nobiterminal -p "$ASSET" -D /tmp/bootstrap-dl
+          tar -xzf "/tmp/bootstrap-dl/$ASSET" -C .bootstrap-cache
+          test -s .bootstrap-cache/bootstrap-cache-manifest.txt
+          mkdir -p app/src/main/assets
+          cd .bootstrap-cache
+          while read -r expected file; do
+            [ -n "$expected" ] || continue
+            [ -n "$file" ] || continue
+            actual=$(sha256sum "$file" | cut -d' ' -f1)
+            if [ "$actual" != "$expected" ]; then echo "sha256 MISMATCH for $file"; exit 1; fi
+            mkdir -p "../app/src/main/assets/$(dirname "$file")"
+            cp "$file" "../app/src/main/assets/$file"
+          done < bootstrap-cache-manifest.txt
+          cd ..
+          ls -l app/src/main/assets/
+          sha256sum app/src/main/assets/bootstrap-*.tar.xz
+
+      # The tree stays com.termux; the rename happens here, exactly as the
+      # generator did it (string replace + java-dir migration).
+      - name: Rename package to com.nobiterminal
+        run: bash scripts/nobi-rename.sh
+
+      # v13 cleanup (upstream legacy launcher PNGs + banner bake into the
+      # APK while the manifest uses the Nobi vector icon; no reference).
+      - name: Remove dead Nobi assets
+        run: |
+          set -e
+          res_dir="app/src/main/res"
+          for density in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
+            rm -f "$res_dir/mipmap-$density/ic_launcher.png" \
+                  "$res_dir/mipmap-$density/ic_launcher_round.png"
+          done
+          rm -f "$res_dir/drawable/banner.png"
+          if ls "$res_dir"/mipmap-*/ic_launcher.png "$res_dir"/mipmap-*/ic_launcher_round.png "$res_dir/drawable/banner.png" >/dev/null 2>&1; then
+            echo "ERROR: dead Nobi assets still present after removal."
+            exit 1
+          fi
+          echo "Dead Nobi assets removed (legacy launcher PNGs + banner.png)."
+
+      # Same Gradle invocations the generator used (proven v4..v24).
+      - name: Build debug APK
+        run: |
+          ./gradlew publishReleasePublicationToMavenLocal --no-daemon
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/debug/termux-app_apt-android-7-debug_universal.apk com.nobiterminal-f-droid-termux-app_apt-android-7-debug_universal.apk
+          ls -l *.apk && sha256sum *.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NobiTerminal-debug-apk
+          path: com.nobiterminal-f-droid-termux-app_apt-android-7-debug_universal.apk
