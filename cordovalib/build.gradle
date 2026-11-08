@@ -1,0 +1,50 @@
+// v29: Apache Cordova library (cordova-android 15.1.0) as an Android library
+// module. Converted from platforms/android/CordovaLib (AGP 8.10.1) to the
+// terminal project's AGP 8.13.2 setup. cordova.gradle / repositories.gradle /
+// cordova-publish.gradle are dropped (their values are inlined below).
+plugins {
+    id "com.android.library"
+}
+
+android {
+    namespace = 'org.apache.cordova'
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 21
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    api 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+}

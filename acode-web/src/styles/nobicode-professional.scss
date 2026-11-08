@@ -1,0 +1,60 @@
+/* NobiCode professional polish (2026-10-30 redesign).
+   Only visual polish: rounded cards, clean spacing, muted shadows.
+   All colours come from the active theme's CSS variables, so this
+   adapts to light themes too and changes no feature or behaviour. */
+
+body[theme-type="dark"] {
+  --box-shadow-color: rgba(0, 0, 0, 0.45);
+}
+
+#welcome-tab .welcome-section,
+#welcome-tab .welcome-links {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--secondary-color);
+}
+
+#welcome-tab .welcome-header .logo {
+  border-radius: 12px;
+}
+
+#welcome-tab .action-row,
+#welcome-tab .link-row {
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+#welcome-tab .action-row:active,
+#welcome-tab .link-row:active {
+  background: var(--popup-background-color);
+}
+
+#welcome-tab .section-label {
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.open-file-list,
+.list,
+.section {
+  border-radius: 10px;
+}
+
+.notification-item-container,
+.prompt,
+.mask .prompt {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--box-shadow-color);
+}
+
+button,
+.button-container button {
+  border-radius: 10px;
+}
+
+input,
+textarea,
+select {
+  border-radius: 10px;
+}
