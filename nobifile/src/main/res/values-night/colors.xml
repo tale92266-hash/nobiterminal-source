@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2018 Hai Zhang <dreaming.in.code.zh@gmail.com>
+  ~ All Rights Reserved.
+  -->
+
+<resources>
+
+    <color name="system_window_scrim">@color/system_window_scrim_dark</color>
+
+    <color name="color_primary_dark_black">@color/system_window_scrim_dark_black</color>
+
+    <color name="color_primary">@color/color_primary_dark</color>
+
+    <color name="color_surface">@color/color_surface_dark</color>
+
+    <color name="activity_icon_tint">@color/secondary_text_default_material_dark</color>
+
+    <color name="file_icon_light_blue">#6F9EF3</color>
+    <color name="file_icon_blue">#4285F4</color>
+    <color name="file_icon_cyan">#78D9EC</color>
+    <color name="file_icon_light_green">#81C995</color>
+    <color name="file_icon_green">#4FB885</color>
+    <color name="file_icon_deep_green">#3FB179</color>
+    <color name="file_icon_grey">#9AA0A6</color>
+    <color name="file_icon_orange">#FD9167</color>
+    <color name="file_icon_purple">#C58AF9</color>
+    <color name="file_icon_red">#F28B82</color>
+    <color name="file_icon_deep_red">#E8877F</color>
+    <color name="file_icon_yellow">#F8CF5C</color>
+    <!-- NobiFile identity palette (dark) — v29: remapped to NobiTerminal v28 tokens -->
+    <color name="nobi_primary">#168BFF</color>
+    <color name="nobi_on_primary">#FFFFFF</color>
+    <color name="nobi_primary_container">#12345C</color>
+    <color name="nobi_on_primary_container">#F2F5FC</color>
+    <color name="nobi_secondary">#00D6E8</color>
+    <color name="nobi_on_secondary">#082F3A</color>
+    <color name="nobi_secondary_container">#155E75</color>
+    <color name="nobi_on_secondary_container">#CFFAFE</color>
+    <color name="nobi_tertiary">#7545D9</color>
+    <color name="nobi_on_tertiary">#2E1065</color>
+    <color name="nobi_tertiary_container">#5B21B6</color>
+    <color name="nobi_on_tertiary_container">#EDE9FE</color>
+    <color name="nobi_surface">#101827</color>
+    <color name="nobi_on_surface">#F2F5FC</color>
+    <color name="nobi_surface_variant">#151F30</color>
+    <color name="nobi_on_surface_variant">#AAB6C8</color>
+    <color name="nobi_outline">#26354A</color>
+</resources>
