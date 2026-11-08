@@ -41,6 +41,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # v29: the :nobifile module builds two tiny C libs (hiddenapi, syscall)
+      # via CMake — install exactly the versions its build.gradle pins.
+      - name: Install CMake + NDK for :nobifile
+        run: |
+          set -e
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "cmake;3.22.1" "ndk;29.0.14206865"
+          ls "$ANDROID_HOME/cmake/3.22.1/bin/cmake"
+          ls -d "$ANDROID_HOME/ndk/29.0.14206865"
+
       - name: Restore Gradle cache
         uses: actions/cache@v4
         with:
@@ -112,6 +121,35 @@ jobs:
             exit 1
           fi
           echo "Dead Nobi assets removed (legacy launcher PNGs + banner.png)."
+
+      # v29: build the Acode editor's www bundle (rspack) from acode-web/,
+      # AFTER the rename — the bundle must carry the renamed
+      # com.nobiterminal strings. The built bundle lands in the :acode
+      # module's assets (acode/src/main/assets/www/build/). Node LTS, same
+      # as NobiCode CI. `node utils/config.js d paid` is file edits only
+      # (babel compact flag, logo colours; the widget id is already the
+      # paid com.nobicode.editor) — no cordova CLI, no network. JDK stays
+      # 17: the www build is pure Node.
+      - name: Set up Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: acode-web/package-lock.json
+
+      - name: Build Acode www bundle (rspack)
+        run: |
+          set -e
+          cd acode-web
+          npm install
+          node utils/config.js d paid
+          npx rspack --mode development
+          test -s www/build/boot.js
+          test -s www/build/main.js
+          ls -l www/build/
+          mkdir -p ../acode/src/main/assets/www/build
+          cp -r www/build/. ../acode/src/main/assets/www/build/
+          ls -l ../acode/src/main/assets/www/build/
 
       # Same Gradle invocations the generator used (proven v4..v24).
       - name: Build debug APK

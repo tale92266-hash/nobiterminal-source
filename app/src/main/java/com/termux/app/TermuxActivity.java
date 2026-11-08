@@ -775,7 +775,27 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         if (nobiCodeItem != null) {
             nobiCodeItem.setOnClickListener(v -> {
                 getDrawer().closeDrawers();
-                ActivityUtils.startActivity(this, new Intent(this, com.nobidev.nobicode.MainActivity.class));
+                // v29: the Code Editor is the Acode editor (com.nobicode.editor
+                // MainActivity) merged into this app. Pass the terminal home
+                // so a first open starts there (handlers/intent.js reads the
+                // nobi_open_folder extra; the editor's saved folders win).
+                Intent editorIntent = new Intent(this, com.nobicode.editor.MainActivity.class);
+                editorIntent.putExtra("nobi_open_folder",
+                        "file://" + TermuxConstants.TERMUX_HOME_DIR_PATH);
+                ActivityUtils.startActivity(this, editorIntent);
+            });
+        }
+
+        // v29: File Manager (NobiFile) — opens at the terminal home.
+        View nobiFileItem = findViewById(R.id.nobi_menu_nobifile);
+        if (nobiFileItem != null) {
+            nobiFileItem.setOnClickListener(v -> {
+                getDrawer().closeDrawers();
+                Intent fileManagerIntent = new Intent(this,
+                        me.zhanghai.android.files.filelist.FileListActivity.class);
+                fileManagerIntent.putExtra("com.nobifile.manager.extra.PATH_URI",
+                        "file://" + TermuxConstants.TERMUX_HOME_DIR_PATH);
+                ActivityUtils.startActivity(this, fileManagerIntent);
             });
         }
 
@@ -1894,6 +1914,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private void tagNobiDrawerRows() {
         setDrawerRowTag(R.id.nobi_menu_new_window, "new_window");
         setDrawerRowTag(R.id.nobi_menu_nobicode, "nobicode");
+        setDrawerRowTag(R.id.nobi_menu_nobifile, "nobifile");
         setDrawerRowTag(R.id.nobi_menu_new_session, "new_session");
         setDrawerRowTag(R.id.nobi_menu_quick_commands, "quick_commands");
         setDrawerRowTag(R.id.nobi_menu_find, "find");
@@ -1919,6 +1940,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         // v24 w49: spec order — WORKSPACE (New Session first), TOOLS,
         // APPLICATION. Saved user orders are preserved as-is.
         String[] defaults = new String[]{"new_session", "new_window", "nobicode",
+            "nobifile",
             "quick_commands", "find", "server", "session_tools", "output_editor",
             "permissions", "settings", "exit"};
         for (String key : defaults) if (!order.contains(key)) order.add(key);

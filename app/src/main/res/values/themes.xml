@@ -115,7 +115,7 @@
         <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Light</item>
         <!-- v21 w36: drawer navy in BOTH modes (night twin already navy/white). -->
         <item name="termuxActivityDrawerBackground">@color/nobi_navy</item>
-        <item name="termuxActivityDrawerImageTint">@color/white</item>
+        <item name="termuxActivityDrawerImageTint">@color/nobi_ds_drawer_text</item>
 
         <!-- Extra keys colors (v24 w47: design-system tokens; v25: resting
              key bg = elevated surface (#2D2D2D dark / #F1F5F9 light),

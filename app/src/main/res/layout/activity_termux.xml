@@ -202,7 +202,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/application_name"
+                            android:text="@string/nobi_toolbar_title"
                             android:textColor="@color/nobi_ds_drawer_text"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -294,6 +294,30 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:text="@string/nobi_menu_nobicode"
+                            android:textColor="?attr/termuxActivityDrawerImageTint"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <!-- v29: File Manager (NobiFile) — right after Code Editor. -->
+                    <LinearLayout
+                        android:id="@+id/nobi_menu_nobifile"
+                        style="@style/NobiDsDrawerRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_nobi_folder"
+                            app:tint="@color/nobi_cyan" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/nobi_menu_nobifile"
                             android:textColor="?attr/termuxActivityDrawerImageTint"
                             android:textSize="15sp" />
                     </LinearLayout>

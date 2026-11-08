@@ -8,7 +8,11 @@
         <item name="android:paddingBottom">15dp</item>
         <item name="android:paddingStart">@dimen/nobi_ds_spacing_16</item>
         <item name="android:paddingEnd">@dimen/nobi_ds_spacing_16</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <!-- v29: 12dp rounded row background (selected = nobi_ds_selected),
+             inset 8dp from the drawer edges so the rounding shows. -->
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/nobi_drawer_row_background</item>
         <item name="android:gravity">center_vertical</item>
     </style>
     <style name="NobiDsDrawerSectionLabel">

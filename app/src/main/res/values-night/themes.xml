@@ -32,7 +32,7 @@
         <!-- Left drawer. -->
         <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Dark</item>
         <item name="termuxActivityDrawerBackground">@color/nobi_navy</item>
-        <item name="termuxActivityDrawerImageTint">@color/white</item>
+        <item name="termuxActivityDrawerImageTint">@color/nobi_ds_drawer_text</item>
 
         <!-- Extra keys colors. -->
         <!-- v24 w54: night twin of the w47 ds-token block (day file). -->

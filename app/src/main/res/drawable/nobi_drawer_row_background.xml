@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v29: drawer row background — 12dp rounded, selected/activated row =
+     nobi_ds_selected, pressed = blue ripple clipped to the rounded shape.
+     Replaces the flat selectableItemBackground (no rounding, no selected
+     state) so the drawer matches the v28 design tokens. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/nobi_ds_selected" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    <item android:state_activated="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/nobi_ds_selected" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    <item>
+        <ripple android:color="#33168BFF">
+            <item android:id="@android:id/mask">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/white" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</selector>

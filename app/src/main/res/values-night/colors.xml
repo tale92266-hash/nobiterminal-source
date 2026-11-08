@@ -46,7 +46,7 @@
     <color name="nobi_ds_success">#FF81C995</color>
     <color name="nobi_ds_warning">#FFFDD663</color>
     <color name="nobi_ds_error">#FFF28B82</color>
-    <color name="nobi_ds_drawer_bg">#FF202124</color>
-    <color name="nobi_ds_drawer_text">#FFE8EAED</color>
-    <color name="nobi_ds_drawer_text_secondary">#FF9AA0A6</color>
+    <color name="nobi_ds_drawer_bg">#FF070B18</color>
+    <color name="nobi_ds_drawer_text">#FFF2F5FC</color>
+    <color name="nobi_ds_drawer_text_secondary">#FFAAB6C8</color>
 </resources>

@@ -27,6 +27,8 @@ android {
         implementation "androidx.core:core:1.13.1"
         implementation "androidx.drawerlayout:drawerlayout:1.2.0"
         implementation project(":nobicode")
+        implementation project(":nobifile")
+        implementation project(":acode")
         implementation "androidx.preference:preference:1.2.1"
         implementation "androidx.viewpager:viewpager:1.0.0"
         implementation "com.google.android.material:material:1.12.0"
