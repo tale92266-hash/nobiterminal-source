@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+<defs>
+<linearGradient id="n" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#67E8F9"/><stop offset=".55" stop-color="#38BDF8"/><stop offset="1" stop-color="#2563EB"/>
+</linearGradient>
+<linearGradient id="o" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#22D3EE"/>
+</linearGradient>
+</defs>
+<ellipse cx="96" cy="96" rx="82" ry="30" fill="none" stroke="url(#o)" stroke-width="7" transform="rotate(-18 96 96)"/>
+<circle cx="34" cy="52" r="5" fill="#22D3EE"/>
+<circle cx="162" cy="48" r="4" fill="#A855F7"/>
+<circle cx="170" cy="120" r="5" fill="#22D3EE"/>
+<path d="M58 142 V50 H76 L116 110 V50 H134 V142 H116 L76 82 V142 Z" fill="url(#n)"/>
+<circle cx="148" cy="146" r="27" fill="#0B1220" stroke="url(#o)" stroke-width="4"/>
+<polyline points="139,136 130,146 139,156" fill="none" stroke="#22D3EE" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="157,136 166,146 157,156" fill="none" stroke="#C084FC" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="150" y1="134" x2="146" y2="158" stroke="#22D3EE" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,27 @@
+#!/bin/bash
+# v29: `nobicode` CLI for the NobiTerminal engine — opens a file or folder
+# in the Acode editor tab via the OSC 7777 escape sequence (the same
+# protocol the Alpine build used; paths here are real NobiTerminal paths,
+# no sandbox). Installed by NobiTerminalServer into $PREFIX/bin on the
+# first terminal-tab session, only if the file does not exist yet.
+get_abs_path() {
+  local path="$1"
+  if [[ "$path" = /* ]]; then
+    realpath -m "$path" 2>/dev/null || echo "$path"
+  else
+    realpath -m "$PWD/$path" 2>/dev/null || echo "$PWD/$path"
+  fi
+}
+if [[ -z "$1" ]]; then
+  echo "Usage: nobicode <file|folder>"
+  exit 1
+fi
+abs_path="$(get_abs_path "$1")"
+if [[ -d "$abs_path" ]]; then
+  printf '\e]7777;open;folder;%s\a' "$abs_path"
+elif [[ -f "$abs_path" ]]; then
+  printf '\e]7777;open;file;%s\a' "$abs_path"
+else
+  echo "nobicode: $1: No such file or directory" >&2
+  exit 1
+fi

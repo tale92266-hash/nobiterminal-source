@@ -1,0 +1,83 @@
+// v29: Acode (NobiCode) Cordova app as an Android library module.
+// Converted from the generated platforms/android/app (cordova-android 15.1.0,
+// AGP 8.10.1 / Kotlin 2.3.0) to the terminal project's AGP 8.13.2 / Kotlin 2.2.21
+// setup. Application -> library: no applicationId/versionCode/signing, no
+// launcher. The www bundle is built by CI (build-app.yml) and copied into
+// src/main/assets/www before Gradle runs; the placeholder www ships in-tree.
+// NobiCode's fixed-key signing block (build-extras.gradle) is NOT carried
+// over: the merged app signs with the terminal testkey. The
+// packagingOptions pickFirst + commons-logging/bouncycastle excludes from
+// build-extras.gradle ARE carried over.
+plugins {
+    id "com.android.library"
+}
+
+android {
+    namespace = 'com.nobicode.editor'
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 21
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        pickFirst 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+configurations {
+    all {
+        exclude module: 'commons-logging'
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+        exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+        exclude group: 'org.bouncycastle', module: 'bcpkix-jdk18on'
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk18on'
+    }
+}
+
+dependencies {
+    implementation project(':cordovalib')
+    // v29 §7: NobiTerminal engine — PTY sessions (TerminalSubprocess) +
+    // the canonical shell environment (TermuxShellEnvironment).
+    implementation project(':terminal-emulator')
+    implementation project(':termux-shared')
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'androidx.security:security-crypto:1.1.0'
+    implementation 'androidx.browser:browser:1.8.0'
+    implementation 'commons-net:commons-net:3.12.0'
+    implementation 'com.android.billingclient:billing:8.0.0'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-codec:commons-codec:1.10'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation 'org.nanohttpd:nanohttpd:+'
+    implementation 'com.sshtools:maverick-synergy-client:3.1.4'
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.83'
+    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.83'
+    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.core:core-google-shortcuts:1.0.0'
+    implementation 'org.java-websocket:Java-WebSocket:1.6.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    // NOTE: kotlin-stdlib 2.3.0 (Cordova-generated) is dropped: no Kotlin
+    // sources exist in the Acode tree; okhttp's transitive kotlin-stdlib
+    // resolves via the project's Kotlin 2.2.21.
+    // NOTE: webkit 1.4.0 + browser 1.5.0 (also in the generated deps) are
+    // dropped; Gradle keeps the higher 1.14.0 / 1.8.0 anyway.
+}
