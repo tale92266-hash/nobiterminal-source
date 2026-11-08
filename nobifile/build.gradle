@@ -48,9 +48,10 @@ android {
         resValues true
         viewBinding true
     }
-    androidResources {
-        generateLocaleConfig true
-    }
+    // v29: generateLocaleConfig REMOVED — it is app-only (it generates the
+    // app's res/xml/locales_config.xml for per-app language) and AGP 8.13.2's
+    // LIBRARY AndroidResources DSL has no such method (the fork had it in its
+    // APPLICATION module under AGP 9.4.1). A library never generates it.
     compileOptions {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_11
