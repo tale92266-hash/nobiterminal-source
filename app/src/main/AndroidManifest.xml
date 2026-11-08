@@ -22,7 +22,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- v29: maxSdkVersion=32 + tools:replace — :nobicode (native editor)
+         declares 29, :nobifile (file manager) declares 32; the merger cannot
+         pick one. 32 wins: it covers :nobicode's <=29 range and keeps the
+         file manager's access on API 30-32. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:replace="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -51,7 +58,8 @@
         android:roundIcon="@drawable/nobi_app_icon_round"
         android:supportsRtl="false"
         android:theme="@style/Theme.TermuxApp.DayNight.DarkActionBar"
-        tools:targetApi="m">
+        tools:targetApi="m"
+        tools:replace="android:allowBackup,android:supportsRtl">
 
         <activity
             android:name=".app.TermuxActivity"
