@@ -38,9 +38,11 @@
         <!-- v24 w54: night twin of the w47 ds-token block (day file). -->
         <item name="extraKeysButtonTextColor">@color/nobi_ds_text_primary</item>
         <item name="extraKeysButtonActiveTextColor">@color/nobi_ds_accent</item>
-        <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_elevated</item>
+        <!-- v27: dedicated keycap colours — the old elevated/outline
+             pair was invisible on the bar (root cause of flat keys). -->
+        <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_keycap_bg</item>
         <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_ds_selected</item>
-        <item name="extraKeysButtonOutlineColor">@color/nobi_ds_outline</item>
+        <item name="extraKeysButtonOutlineColor">@color/nobi_ds_keycap_outline</item>
     </style>
 
     <!-- v21 w31: night twin of Theme.NobiSettings.DayNight. A style defined in

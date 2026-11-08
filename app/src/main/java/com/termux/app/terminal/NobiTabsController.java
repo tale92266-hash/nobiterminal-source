@@ -48,14 +48,12 @@ public class NobiTabsController {
     private static final String PREF_KEY_NOTES = "tab_notes";
     private static final String PREF_KEY_COLORS = "tab_colors";
 
-    // v26: spec Phase 3 tabs — the strip sits below the restored toolbar.
-    // Active tab = blue selected surface (#12345C night); inactive tabs =
-    // dark neutral surfaces (not transparent — the strip bg shows through
-    // otherwise and the tabs lose their edges). Both keep the rounded TOP
-    // corners only (8dp), sitting flush on the strip's bottom edge like a
-    // Chrome tab. Active title = primary text, inactive = secondary.
-    // Order, persistence, drag-reorder, rename, notes, colours and
-    // running/exited states are all untouched.
+    // v27: spec section 3 tabs — fully rounded cards (12dp ALL corners)
+    // with a terminal icon, 1dp outline and a restrained blue glow on
+    // the active tab. This supersedes v26's top-only rounded Chrome
+    // tabs (the reference screenshot's tabs are individual rounded
+    // cards, not flush strips). Order, persistence, drag-reorder,
+    // rename, notes, colours and running/exited states are all untouched.
 
     private final TermuxActivity mActivity;
     private final HorizontalScrollView mTabsScrollView;
@@ -283,26 +281,53 @@ public class NobiTabsController {
             : dsColor(R.color.nobi_ds_text_secondary);
         int failedText = dsColor(R.color.nobi_ds_error);
         int verticalPad = dp(compact ? 2 : 4);
-        android.graphics.drawable.GradientDrawable bg =
+        // v27: reference tabs — fully rounded cards (12dp ALL corners),
+        // 1dp outline, terminal icon, restrained blue glow on the active
+        // tab. Active = blue gradient (bright top -> #12345C) + 1dp
+        // #168BFF border + a soft blue halo ring just inside the edge
+        // (outer layer in accent blue at low alpha, inner gradient inset
+        // 2dp). Inactive = dark navy surface + 1dp #26354A border.
+        // 8dp between tabs (4dp margins each side), 44dp tall (2dp
+        // vertical margins in the 48dp strip). Order, persistence,
+        // drag-reorder, rename, notes, colours and running/exited states
+        // are all untouched.
+        android.graphics.drawable.GradientDrawable tabBg =
             new android.graphics.drawable.GradientDrawable();
+        android.graphics.drawable.Drawable tabBackground;
         if (isActive) {
-            bg.setColor(dsColor(R.color.nobi_ds_selected));
+            tabBg.setOrientation(
+                android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM);
+            tabBg.setColors(new int[]{
+                dsColor(R.color.nobi_ds_tab_active_top),
+                dsColor(R.color.nobi_ds_selected)});
+            tabBg.setStroke(dp(1), dsColor(R.color.nobi_ds_accent));
+            tabBg.setCornerRadius(dp(10));
+            android.graphics.drawable.GradientDrawable halo =
+                new android.graphics.drawable.GradientDrawable();
+            halo.setColor(dsColor(R.color.nobi_ds_accent));
+            halo.setAlpha(70);
+            halo.setCornerRadius(dp(12));
+            android.graphics.drawable.LayerDrawable layered =
+                new android.graphics.drawable.LayerDrawable(
+                    new android.graphics.drawable.Drawable[]{halo, tabBg});
+            layered.setLayerInset(1, dp(2), dp(2), dp(2), dp(2));
+            tabBackground = layered;
         } else {
-            bg.setColor(dsColor(R.color.nobi_ds_surface));
+            tabBg.setColor(dsColor(R.color.nobi_ds_surface));
+            tabBg.setStroke(dp(1), dsColor(R.color.nobi_ds_outline));
+            tabBg.setCornerRadius(dp(12));
+            tabBackground = tabBg;
         }
-        // Rounded TOP corners only (8dp) for both states — the tab meets
-        // the terminal area along a straight bottom edge, like a Chrome tab.
-        bg.setCornerRadii(new float[]{dp(8), dp(8), dp(8), dp(8), 0, 0, 0, 0});
-        tab.setBackground(bg);
+        tab.setBackground(tabBackground);
         // v8 sizing: wider tabs (width only — height/verticalPad untouched)
         // so short tabs stop crowding each other and mis-taps drop.
-        tab.setPadding(dp(16), verticalPad, dp(8), verticalPad);
+        tab.setPadding(dp(12), verticalPad, dp(8), verticalPad);
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        // Top gap so the active tab reads as raised; no bottom gap so it
-        // sits flush on the strip's bottom edge (Chrome-style).
-        tabParams.setMargins(dp(2), dp(6), dp(2), 0);
+        // 4dp each side (8dp between tabs), 2dp top/bottom so the tab is
+        // a 44dp floating card in the 48dp strip — not flush like v25/v26.
+        tabParams.setMargins(dp(4), dp(2), dp(4), dp(2));
         tab.setLayoutParams(tabParams);
         tab.setMinimumWidth(dp(88));
 
@@ -316,6 +341,16 @@ public class NobiTabsController {
             dot.setLayoutParams(dotParams);
             tab.addView(dot);
         }
+
+        // v27: terminal icon before the title, like the reference
+        // ([ >_ | 1 | × ]). Monospace so it reads as a prompt glyph.
+        TextView iconView = new TextView(mActivity);
+        iconView.setText(">_" );
+        iconView.setTextSize(13);
+        iconView.setTypeface(android.graphics.Typeface.MONOSPACE);
+        iconView.setTextColor(activeText);
+        iconView.setPadding(0, 0, dp(6), 0);
+        tab.addView(iconView);
 
         TextView titleView = new TextView(mActivity);
         titleView.setText(resolveTabLabel(session, displayIndex));

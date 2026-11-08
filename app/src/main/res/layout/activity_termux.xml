@@ -91,25 +91,54 @@
             android:layout_above="@+id/terminal_toolbar_view_pager"
             android:layout_height="match_parent">
 
-            <!-- v26: terminal wallpaper — the wave art derived from the
-                 reference screenshot, attached to the actual TerminalView
-                 background. The renderer never paints the default bg
-                 (only non-default backgrounds), so the wallpaper shows
-                 through everywhere the terminal has default bg, and text,
-                 cursor, selection and ANSI colours draw over it. No
-                 ImageView on top, no fake output, no touch interception
-                 (backgrounds don't intercept). -->
-            <com.termux.view.TerminalView
-                android:id="@+id/terminal_view"
+            <!-- v27: terminal workspace — one continuous surface. The
+                 wallpaper lives on an ImageView BEHIND the TerminalView
+                 (centerCrop, no distortion, never intercepts touches —
+                 it is not clickable/focusable), and the TerminalView
+                 itself is transparent so the wallpaper shows through
+                 every default-bg cell (the renderer never paints the
+                 default bg; only reverse-video fills the canvas). The
+                 FrameLayout gives the reference's rounded card (12dp)
+                 + 1dp outline via nobi_terminal_card.xml and clips
+                 children to it. 4dp margins all round (the reference
+                 card sits just inside the screen edges); the old 8dp
+                 TerminalView margins are gone — that + the old bad-crop
+                 wallpaper (black top band) were the two causes of the
+                 black top region and the excessive side margins. The
+                 no-emulator fallback in TerminalView.onDraw only paints
+                 solid when there is no background at all, and the
+                 transparent background counts as one — so a session
+                 switch never flashes opaque over the wallpaper. -->
+            <FrameLayout
+                android:id="@+id/terminal_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="@dimen/nobi_ds_terminal_padding"
-                android:background="@drawable/nobi_terminal_wallpaper"
-                android:defaultFocusHighlightEnabled="false"
-                android:focusableInTouchMode="true"
-                android:scrollbarThumbVertical="@drawable/terminal_scroll_shape"
-                android:scrollbars="vertical"
-                tools:ignore="UnusedAttribute" />
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/nobi_terminal_card"
+                android:clipToOutline="true">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/nobi_terminal_wallpaper"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:contentDescription="@null" />
+
+                <com.termux.view.TerminalView
+                    android:id="@+id/terminal_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:defaultFocusHighlightEnabled="false"
+                    android:focusableInTouchMode="true"
+                    android:scrollbarThumbVertical="@drawable/terminal_scroll_shape"
+                    android:scrollbars="vertical"
+                    tools:ignore="UnusedAttribute" />
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/left_drawer"

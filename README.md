@@ -1,28 +1,30 @@
-# NobiTerminal v24 — full source snapshot
+# NobiTerminal v27 — full source snapshot
 
-This repo is the **complete patched app source tree for NobiTerminal v24**
-(the version shipped as the v24 APK on 2026-11-08). It exists so the app's
+This repo is the **complete app source tree for NobiTerminal v27**
+(the version shipped as the v27 APK on 2026-11-08). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
-> This snapshot is for viewing and editing. It is **not** the build route.
-> The real build route is the generator repo
-> (`tale92266-hash/nobiterminal`): it clones upstream, applies the Nobi
-> patches, renames the package, builds the bootstrap and the app in GitHub
-> Actions, and produces the APK. Edits made here do **not** flow into
-> generator builds automatically — to ship an edit, it must become a patch
-> in the generator repo.
+> This snapshot **is** the build route (since the 2026-11-08 migration to
+> direct-source builds, proven by test build run `42488786223`).
+> `.github/workflows/build-app.yml` builds this tree directly in GitHub
+> Actions (cached bootstrap, testkey signing) and produces the APK — no
+> generator repo, no patches. The old generator route
+> (`tale92266-hash/nobiterminal`) is retired for app changes. Edits are
+> made in the local clone, pushed to `main`, and the workflow builds them.
 
 > **Single-repo rule (Sam's order, 2026-10-27):** this ONE repo is updated
 > in place for every version — no new repo per version. `main` always
 > holds the latest shipped version's tree; each version is also kept as a
 > lightweight tag (`v20`, `v21`, …). This file describes the tree at
-> `main` (v24). The v20, v21, v22 and v23 trees are tags `v20`, `v21`, `v22` and `v23`.
+> `main` (v27). The v20–v26 trees are tags `v20`–`v26`.
 
 ## What this snapshot was made from (NEW pattern — plugin + base patches)
 
 - **Base:** upstream `termux/termux-app`
   `@8629e632fcb95da272221be327db653fb24befe9` (2026-09-26).
-- **Frozen base:** v24 is built on the frozen V19 base — generator branch
+- **Frozen base:** v27 is built directly from this tree (direct-source
+  builds since the 2026-11-08 migration — no generator patches since
+  v24). The tree itself is built on the frozen V19 base — generator branch
   `v24-ui-redesign` `@c42a3287`, branched
   from `v23-autorepo-all-repos` `@a99980eece17c1fb9ef98eec8112e95548b23dc1`
   (itself from `v21-theme-batch` `@7885be2f41c114b256f0d95b17bfefc030c8a8c9`,
@@ -41,17 +43,11 @@ patch, see below), then the **base patches** from the generator repo's
   `patch -p1`. Plugin phase: 0 `.rej`, 0 `.orig`. Base phase: 0 `.rej`;
   `.orig` files from offset/fuzz were logged and deleted, exactly like
   the generator's `apply_patches` does.
-- **Shipped v24 APK for cross-reference:** 35,536,514 bytes,
-  SHA-256 `f310f8c1d4803f8727e70c383e6cae5c7c45044df1cc1410cae47999288dd307`,
-  generator run `42486440921` (cache HIT, ~9 min 45 s — the dc47 seed
-  published by the v20 build; no bootstrap patch changed, so the cache
-  key did not move and no new seed was published). Run 1 failed at AAPT
-  resource linking (dotted style names need an explicit parent — fixed
-  by w52); run 2 failed at javac (two FAB call sites survived the FAB
-  removal — fixed by w53); run 3 succeeded, then was superseded by run 4
-  (w54 night-twin parity — verify_tree caught the day/night mismatch),
-  signer
-  SHA-256 fingerprint
+- **Shipped v26 APK (previous version, for cross-reference):** 35,727,261 bytes,
+  SHA-256 `b53cb5fc8adf588d95c352a90b02285c98d05318623db5d762d6e0fb8549744c`,
+  direct-source run `42494685932` (cache HIT, ~4 min 6 s — the dc47 seed;
+  no bootstrap change). v27 APK details live in `appv27/BUILD.md`
+  (workspace, not in this repo). Signing testkey SHA-256 fingerprint
   `B6:DA:01:48:0E:EF:D5:FB:F2:CD:37:71:B8:D1:02:1E:C7:91:30:4B:DD:6C:4B:F4:1D:3F:AA:BA:D4:8E:E5:E1`.
 
 ### The 63 plugin patches, in apply order
@@ -165,6 +161,12 @@ in this tree for them to patch:
 So this tree is the full CI tree **for the `termux-app` module**: every
 base-patch effect that lands inside `termux-app` is present; the two
 sibling-app-only patches have no effect on this module by construction.
+
+## What's new in v25–v27 (direct-source updates, no patches)
+
+- **v25 (2026-11-08, run `42490828681`):** first direct-source update. Tabs became the top bar (Chrome-type, 56dp toolbar heading deleted), drawer scrolls, professional Chrome dark greys (`#202124` / `#121212` / `#35363A`, accent `#8AB4F8`).
+- **v26 (2026-11-08, run `42494685932`):** Sam's own redesign spec — toolbar WITH heading returns (56dp, NobiTerm / Linux Terminal, search / settings / overflow) + tabs below, navy palette (`#070B18` / `#168BFF` / `#00D6E8`), wave wallpaper as the TerminalView background, NOBITA welcome, extra-key retune.
+- **v27 (2026-11-08):** visual correction against Sam's on-device screenshots + the reference screenshot. (1) Full-screen wallpaper: the v26 wallpaper asset was a bad crop (black top band + baked frame) — replaced with Sam's supplied pure wallpaper; TerminalView now sits in a rounded 12dp card (ImageView centerCrop behind, transparent TerminalView on top) with the old 8dp margins removed. (2) Proper session tabs: fully rounded 12dp cards, terminal icon, blue active border + restrained glow, 8dp spacing, 44dp tall. (3) Individual keycaps — ROOT CAUSE: the keycap drawable existed and was applied, but its fill (`#151F30`) and outline (`#26354A`) were near-invisible on the `#050A19` bar; dedicated visible keycap colours (`#1B2A45` fill, `#3E6FB5` outline) + MaterialButton tint cleared. (4) Welcome spacing: motd transform adds one blank line on top + one-column art indent (surgical — icon lines preserved). README version marker updated to v27 (it still said v24).
 
 ## What's new in v24 (vs v23) — complete UI redesign (all 6 phases)
 

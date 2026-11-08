@@ -317,6 +317,13 @@ public final class ExtraKeysView extends GridLayout {
     /** Apply a keycap background to a key view (resting or pressed fill). */
     protected void nobiSetKeyBackground(android.view.View view, int fillColor) {
         view.setBackground(nobiKeyBackground(fillColor));
+        // v27: MaterialButton can apply its style's backgroundTint over a
+        // custom drawable and wash it out — clear the tint so the keycap
+        // (fill + outline) renders exactly as drawn. Belt-and-braces
+        // next to the colour fix; the tint was not the primary cause
+        // (the old colours were near-invisible on the bar).
+        if (view instanceof MaterialButton)
+            ((MaterialButton) view).setBackgroundTintList(null);
     }
 
 
@@ -457,6 +464,8 @@ public final class ExtraKeysView extends GridLayout {
                 // v15: resting background was never set (buttons started
                 // v15: transparent, showing the bar behind them) — set it explicitly.
                 button.setBackground(nobiKeyBackground(mButtonBackgroundColor));
+                // v27: clear any MaterialButton tint (see nobiSetKeyBackground).
+                button.setBackgroundTintList(null);
                 button.setAllCaps(mButtonTextAllCaps);
                 button.setPadding(0, 0, 0, 0);
 
@@ -658,6 +667,8 @@ public final class ExtraKeysView extends GridLayout {
         button.setWidth(width);
         button.setHeight(height);
         button.setBackground(nobiKeyBackground(mButtonActiveBackgroundColor));
+        // v27: clear any MaterialButton tint (see nobiSetKeyBackground).
+        button.setBackgroundTintList(null);
         mPopupWindow = new PopupWindow(this);
         mPopupWindow.setWidth(LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(LayoutParams.WRAP_CONTENT);

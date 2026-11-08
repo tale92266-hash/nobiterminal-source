@@ -124,9 +124,10 @@
              here. -->
         <item name="extraKeysButtonTextColor">@color/nobi_ds_text_primary</item>
         <item name="extraKeysButtonActiveTextColor">@color/nobi_ds_accent</item>
-        <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_elevated</item>
+        <!-- v27: dedicated keycap colours (day twins of the night pair). -->
+        <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_keycap_bg</item>
         <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_ds_selected</item>
-        <item name="extraKeysButtonOutlineColor">@color/nobi_ds_outline</item>
+        <item name="extraKeysButtonOutlineColor">@color/nobi_ds_keycap_outline</item>
 
         <!-- v24 w47: surface roles for dialogs/menus (mode-resolved). -->
         <item name="colorSurface">@color/nobi_ds_surface</item>
