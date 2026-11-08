@@ -117,6 +117,8 @@ public final class ExtraKeysView extends GridLayout {
     public static final int ATTR_BUTTON_BACKGROUND_COLOR = R.attr.extraKeysButtonBackgroundColor;
     /** Defines the default value for {@link #mButtonActiveBackgroundColor} defined by current theme. */
     public static final int ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR = R.attr.extraKeysButtonActiveBackgroundColor;
+    /** Defines the default value for {@link #mButtonOutlineColor} defined by current theme. */
+    public static final int ATTR_BUTTON_OUTLINE_COLOR = R.attr.extraKeysButtonOutlineColor;
 
     /** Defines the default fallback value for {@link #mButtonTextColor} if {@link #ATTR_BUTTON_TEXT_COLOR} is undefined. */
     public static final int DEFAULT_BUTTON_TEXT_COLOR = 0xFFFFFFFF;
@@ -126,6 +128,8 @@ public final class ExtraKeysView extends GridLayout {
     public static final int DEFAULT_BUTTON_BACKGROUND_COLOR = 0x00000000;
     /** Defines the default fallback value for {@link #mButtonActiveBackgroundColor} if {@link #ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR} is undefined. */
     public static final int DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR = 0xFF7F7F7F;
+    /** Defines the default fallback value for {@link #mButtonOutlineColor} if {@link #ATTR_BUTTON_OUTLINE_COLOR} is undefined. */
+    public static final int DEFAULT_BUTTON_OUTLINE_COLOR = 0xFF263449;
 
 
 
@@ -176,6 +180,9 @@ public final class ExtraKeysView extends GridLayout {
     /** The background color for the extra keys button when its active. Defaults to
      * {@link #DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR}. */
     protected int mButtonActiveBackgroundColor;
+    /** The outline color for the extra keys keycap. Defaults to
+     * {@link #DEFAULT_BUTTON_OUTLINE_COLOR}. */
+    protected int mButtonOutlineColor;
 
     /** Defines whether text for the extra keys button should be all capitalized automatically. */
     protected boolean mButtonTextAllCaps = true;
@@ -220,6 +227,8 @@ public final class ExtraKeysView extends GridLayout {
             ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_ACTIVE_TEXT_COLOR, DEFAULT_BUTTON_ACTIVE_TEXT_COLOR),
             ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_BACKGROUND_COLOR, DEFAULT_BUTTON_BACKGROUND_COLOR),
             ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR, DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR));
+        setButtonOutlineColor(
+            ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_OUTLINE_COLOR, DEFAULT_BUTTON_OUTLINE_COLOR));
 
         setLongPressTimeout(ViewConfiguration.getLongPressTimeout());
         setLongPressRepeatDelay(DEFAULT_LONG_PRESS_REPEAT_DELAY);
@@ -281,6 +290,33 @@ public final class ExtraKeysView extends GridLayout {
         mButtonActiveTextColor = buttonActiveTextColor;
         mButtonBackgroundColor = buttonBackgroundColor;
         mButtonActiveBackgroundColor = buttonActiveBackgroundColor;
+    }
+
+    /** Set {@link #mButtonOutlineColor}. */
+    public void setButtonOutlineColor(int buttonOutlineColor) {
+        mButtonOutlineColor = buttonOutlineColor;
+    }
+
+    /**
+     * v24 w50: keycap background (spec 4) — 8dp rounded corners, 1dp
+     * outline, flat fill. Replaces the flat setBackgroundColor() so
+     * keys read as caps instead of text on the bar. All dispatch,
+     * repeat, popup and modifier behaviour is untouched; only the
+     * background drawable changes.
+     */
+    protected android.graphics.drawable.GradientDrawable nobiKeyBackground(int fillColor) {
+        android.graphics.drawable.GradientDrawable bg =
+            new android.graphics.drawable.GradientDrawable();
+        bg.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+        bg.setCornerRadius(8 * getResources().getDisplayMetrics().density);
+        bg.setColor(fillColor);
+        bg.setStroke((int) (1 * getResources().getDisplayMetrics().density + 0.5f), mButtonOutlineColor);
+        return bg;
+    }
+
+    /** Apply a keycap background to a key view (resting or pressed fill). */
+    protected void nobiSetKeyBackground(android.view.View view, int fillColor) {
+        view.setBackground(nobiKeyBackground(fillColor));
     }
 
 
@@ -397,10 +433,12 @@ public final class ExtraKeysView extends GridLayout {
         setRowCount(buttons.length);
         setColumnCount(maximumLength(buttons));
 
-        // v8 sizing: 1.5dp gap on each side of every key, so keys stop
-        // touching each other. Row height is unchanged (rowSpec FILL),
-        // and no key is added, removed, reordered or re-handled.
-        int keyGapPx = (int) (1.5f * getResources().getDisplayMetrics().density + 0.5f);
+        // v24 w50: 3dp gap on each side of every key (6dp between keys),
+        // 1dp vertical so keys stay 42dp tall in a 44dp row. Row height
+        // is unchanged (rowSpec FILL), and no key is added, removed,
+        // reordered or re-handled.
+        int keyGapPx = (int) (3f * getResources().getDisplayMetrics().density + 0.5f);
+        int keyGapVerticalPx = (int) (1f * getResources().getDisplayMetrics().density + 0.5f);
 
         for (int row = 0; row < buttons.length; row++) {
             for (int col = 0; col < buttons[row].length; col++) {
@@ -418,7 +456,7 @@ public final class ExtraKeysView extends GridLayout {
                 button.setTextColor(mButtonTextColor);
                 // v15: resting background was never set (buttons started
                 // v15: transparent, showing the bar behind them) — set it explicitly.
-                button.setBackgroundColor(mButtonBackgroundColor);
+                button.setBackground(nobiKeyBackground(mButtonBackgroundColor));
                 button.setAllCaps(mButtonTextAllCaps);
                 button.setPadding(0, 0, 0, 0);
 
@@ -430,7 +468,7 @@ public final class ExtraKeysView extends GridLayout {
                 button.setOnTouchListener((view, event) -> {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            view.setBackgroundColor(mButtonActiveBackgroundColor);
+                            nobiSetKeyBackground(view, mButtonActiveBackgroundColor);
                             button.setTextColor(mButtonActiveTextColor);
                             // Start long press scheduled executors which will be stopped in next MotionEvent
                             startScheduledExecutors(view, buttonInfo, button);
@@ -441,12 +479,12 @@ public final class ExtraKeysView extends GridLayout {
                                 // Show popup on swipe up
                                 if (mPopupWindow == null && event.getY() < 0) {
                                     stopScheduledExecutors();
-                                    view.setBackgroundColor(mButtonBackgroundColor);
+                                    nobiSetKeyBackground(view, mButtonBackgroundColor);
                                     button.setTextColor(mButtonTextColor);
                                     showPopup(view, buttonInfo.getPopup());
                                 }
                                 if (mPopupWindow != null && event.getY() > 0) {
-                                    view.setBackgroundColor(mButtonActiveBackgroundColor);
+                                    nobiSetKeyBackground(view, mButtonActiveBackgroundColor);
                                     button.setTextColor(mButtonActiveTextColor);
                                     dismissPopup();
                                 }
@@ -454,13 +492,13 @@ public final class ExtraKeysView extends GridLayout {
                             return true;
 
                         case MotionEvent.ACTION_CANCEL:
-                            view.setBackgroundColor(mButtonBackgroundColor);
+                            nobiSetKeyBackground(view, mButtonBackgroundColor);
                             button.setTextColor(mButtonTextColor);
                             stopScheduledExecutors();
                             return true;
 
                         case MotionEvent.ACTION_UP:
-                            view.setBackgroundColor(mButtonBackgroundColor);
+                            nobiSetKeyBackground(view, mButtonBackgroundColor);
                             button.setTextColor(mButtonTextColor);
                             stopScheduledExecutors();
                             // If ACTION_UP up was not from a repetitive key or was with a key with a popup button
@@ -489,7 +527,7 @@ public final class ExtraKeysView extends GridLayout {
                 } else {
                     param.height = 0;
                 }
-                param.setMargins(keyGapPx, 0, keyGapPx, 0);
+                param.setMargins(keyGapPx, keyGapVerticalPx, keyGapPx, keyGapVerticalPx);
                 param.columnSpec = GridLayout.spec(col, GridLayout.FILL, 1.f);
                 param.rowSpec = GridLayout.spec(row, GridLayout.FILL, 1.f);
                 button.setLayoutParams(param);
@@ -619,7 +657,7 @@ public final class ExtraKeysView extends GridLayout {
         button.setMinimumHeight(0);
         button.setWidth(width);
         button.setHeight(height);
-        button.setBackgroundColor(mButtonActiveBackgroundColor);
+        button.setBackground(nobiKeyBackground(mButtonActiveBackgroundColor));
         mPopupWindow = new PopupWindow(this);
         mPopupWindow.setWidth(LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(LayoutParams.WRAP_CONTENT);

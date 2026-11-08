@@ -72,6 +72,9 @@
       https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/values/themes.xml#L70
      -->
     <style name="ThemeOverlay.BaseDialog.Light" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- v24 w51: M3 dialog corner radius (spec 5, 20dp shape). -->
+        <item name="dialogCornerRadius">20dp</item>
+
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/nobi_navy</item>
         <item name="colorPrimaryVariant">@color/nobi_navy</item>

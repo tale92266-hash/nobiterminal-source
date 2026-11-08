@@ -1035,7 +1035,10 @@ public final class TerminalView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (mEmulator == null) {
-            canvas.drawColor(0XFF000000);
+            // v24 w48: no-emulator fallback = design-system terminal bg
+            // (#080D1C) instead of pure black, so a session switch never
+            // flashes a black frame.
+            canvas.drawColor(0XFF080D1C);
         } else {
             // render the terminal view and highlight any selected text
             int[] sel = mDefaultSelectors;
