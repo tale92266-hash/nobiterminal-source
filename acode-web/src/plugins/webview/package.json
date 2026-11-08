@@ -1,0 +1,11 @@
+{
+  "name": "cordova-plugin-nobicode-webview",
+  "version": "2.0.0",
+  "description": "NobiCode WebView Plugin API - Create and manage isolated WebView instances",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0"
+}
