@@ -69,8 +69,11 @@
             android:process=":crash_reporter"
             android:theme="@style/Theme.NobiCode" />
 
+        <!-- v29: NobiFileProvider (subclass) — see NobiFileProvider.java. The plain
+             FileProvider class collides with :acode's three FileProvider entries
+             in the manifest merger (same android:name, different authorities). -->
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="com.nobidev.nobicode.NobiFileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
