@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v26: toolbar app mark — a terminal ">_" glyph in a rounded square with
+     a primary-blue outline, as in the reference screenshot. 40dp so it
+     reads as an app mark next to the title (the 24dp action icons stay
+     24dp). Used as the MaterialToolbar logo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#168BFF"
+        android:strokeWidth="2"
+        android:pathData="M10,4 H30 A6,6 0 0 1 36,10 V30 A6,6 0 0 1 30,36 H10 A6,6 0 0 1 4,30 V10 A6,6 0 0 1 10,4 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#F2F5FC"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,15 L18,20 L12,25 M22,26 H29" />
+</vector>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v26: toolbar actions (spec Phase 2). All three are wired in
+     TermuxActivity.setupNobiToolbar() to existing implementations:
+     search -> NobiTerminalSearch (same as the drawer Find row),
+     settings -> SettingsActivity (same as the drawer Settings row),
+     overflow -> the terminal context menu (same as onCreateOptionsMenu).
+     Icons are tinted with the design-system primary text colour so the
+     black-filled stock icons read on the dark toolbar. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nobi_toolbar_search"
+        android:title="@string/nobi_toolbar_search"
+        android:icon="@drawable/ic_nobi_search"
+        app:iconTint="@color/nobi_ds_text_primary"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/nobi_toolbar_settings"
+        android:title="@string/nobi_toolbar_settings"
+        android:icon="@drawable/ic_settings"
+        app:iconTint="@color/nobi_ds_text_primary"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/nobi_toolbar_overflow"
+        android:title="@string/nobi_toolbar_more"
+        android:icon="@drawable/ic_nobi_overflow"
+        app:iconTint="@color/nobi_ds_text_primary"
+        app:showAsAction="always" />
+</menu>

@@ -1,43 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- v21 w31: night twins of the mode-resolved Nobi tokens.
-         v25: the v24 dark palette (deep navy #0B0F19 / #080D1C + neon
-         cyan #25C2D8) IS the generic "AI-made app" look Sam rejected.
-         The retune below is deliberately boring and professional:
-         neutral greys taken from Chrome's own dark theme (the app Sam
-         named as the reference for the tabs), with ONE muted blue
-         accent used sparingly — the same discipline real apps ship:
-         - app bg #202124 = Chrome dark toolbar grey (neutral, no blue tint)
-         - terminal bg #121212 = near-black neutral (real terminals are
-           near-black, not navy)
-         - surface #35363A = Chrome dark active-tab grey (the active tab
-           sits on the strip in exactly this colour)
-         - elevated #2D2D2D / selected #3C4043 = Chrome dark greys
-         - text #E8EAED / #9AA0A6 / #5F6368 = Chrome dark text scale
-         - accent #8AB4F8 = Google dark blue (desaturated; the blue real
-           Google apps use at night) — replaces neon cyan everywhere the
-           nobi_cyan token is referenced (themes, drawer icons, progress)
-         - success/warning/error = Google dark tones (#81C995/#FDD663/
-           #F28B82), muted instead of saturated
-         - drawer = the same charcoal #202124 in both modes (no navy slab)
+         v26: the spec palette replaces the v25 Chrome greys. The v25
+         retune was deliberately boring/neutral; Sam's own v26 spec
+         restores the deep-navy professional look, so the dark tokens
+         are now the spec values verbatim:
+         - app bg #070B18, terminal bg #050A19, toolbar #080D1A
+         - surface #101827, elevated #151F30, selected tab #12345C
+         - primary blue #168BFF (accent in both modes now, was #8AB4F8),
+           secondary cyan #00D6E8 lives ONLY in terminal branding
+           (welcome wordmark + cursor), never in general controls
+         - text #F2F5FC / #AAB6C8, border #26354A
+         - success/warning/error stay the muted Google dark tones
+         - drawer stays the charcoal #202124 in both modes (v25)
          nobi_navy/nobi_periwinkle still resolve from values/ (brand navy
          survives only in the launcher icon + splash, never in-app). -->
     <color name="nobi_body_surface">#FF202124</color>
     <color name="nobi_secondary_text">#FF9AA0A6</color>
-    <!-- v25: night overrides of the brand accent (day values in values/). -->
-    <color name="nobi_cyan">#FF8AB4F8</color>
-    <color name="nobi_cyan_highlight">#668AB4F8</color>
-    <!-- v24 w47: design-system tokens, DARK mode values (v25 retune, see above). -->
-    <color name="nobi_ds_app_bg">#FF202124</color>
-    <color name="nobi_ds_terminal_bg">#FF121212</color>
-    <color name="nobi_ds_surface">#FF35363A</color>
-    <color name="nobi_ds_elevated">#FF2D2D2D</color>
-    <color name="nobi_ds_selected">#FF3C4043</color>
+    <!-- v26: night accent = spec primary blue (was #8AB4F8 in v25). -->
+    <color name="nobi_cyan">#FF168BFF</color>
+    <color name="nobi_cyan_highlight">#66168BFF</color>
+    <!-- v26: design-system tokens, DARK mode values (spec palette). -->
+    <color name="nobi_ds_app_bg">#FF070B18</color>
+    <color name="nobi_ds_terminal_bg">#FF050A19</color>
+    <color name="nobi_ds_toolbar_bg">#FF080D1A</color>
+    <color name="nobi_ds_surface">#FF101827</color>
+    <color name="nobi_ds_elevated">#FF151F30</color>
+    <color name="nobi_ds_selected">#FF12345C</color>
     <color name="nobi_ds_accent">@color/nobi_cyan</color>
-    <color name="nobi_ds_text_primary">#FFE8EAED</color>
-    <color name="nobi_ds_text_secondary">#FF9AA0A6</color>
-    <color name="nobi_ds_text_tertiary">#FF5F6368</color>
-    <color name="nobi_ds_outline">#FF3C4043</color>
+    <color name="nobi_ds_text_primary">#FFF2F5FC</color>
+    <color name="nobi_ds_text_secondary">#FFAAB6C8</color>
+    <color name="nobi_ds_text_tertiary">#FF64748B</color>
+    <color name="nobi_ds_outline">#FF26354A</color>
     <color name="nobi_ds_success">#FF81C995</color>
     <color name="nobi_ds_warning">#FFFDD663</color>
     <color name="nobi_ds_error">#FFF28B82</color>

@@ -48,13 +48,14 @@ public class NobiTabsController {
     private static final String PREF_KEY_NOTES = "tab_notes";
     private static final String PREF_KEY_COLORS = "tab_colors";
 
-    // v25: Chrome-type tabs — the strip is the top bar now. Active tab
-    // is a raised surface tab with rounded TOP corners only (it sits on
-    // the strip's bottom edge, like a Chrome tab); inactive tabs are
-    // flat and transparent. Active title = primary text, inactive =
-    // secondary — Chrome does not colour the active title with the
-    // accent. The user's accent preference is untouched (it still tints
-    // the bottom bar); the "+" button uses the ds accent token.
+    // v26: spec Phase 3 tabs — the strip sits below the restored toolbar.
+    // Active tab = blue selected surface (#12345C night); inactive tabs =
+    // dark neutral surfaces (not transparent — the strip bg shows through
+    // otherwise and the tabs lose their edges). Both keep the rounded TOP
+    // corners only (8dp), sitting flush on the strip's bottom edge like a
+    // Chrome tab. Active title = primary text, inactive = secondary.
+    // Order, persistence, drag-reorder, rename, notes, colours and
+    // running/exited states are all untouched.
 
     private final TermuxActivity mActivity;
     private final HorizontalScrollView mTabsScrollView;
@@ -285,13 +286,13 @@ public class NobiTabsController {
         android.graphics.drawable.GradientDrawable bg =
             new android.graphics.drawable.GradientDrawable();
         if (isActive) {
-            bg.setColor(dsColor(R.color.nobi_ds_surface));
-            // Rounded TOP corners only (8dp) — the tab meets the terminal
-            // area along a straight bottom edge, like a Chrome tab.
-            bg.setCornerRadii(new float[]{dp(8), dp(8), dp(8), dp(8), 0, 0, 0, 0});
+            bg.setColor(dsColor(R.color.nobi_ds_selected));
         } else {
-            bg.setColor(android.graphics.Color.TRANSPARENT);
+            bg.setColor(dsColor(R.color.nobi_ds_surface));
         }
+        // Rounded TOP corners only (8dp) for both states — the tab meets
+        // the terminal area along a straight bottom edge, like a Chrome tab.
+        bg.setCornerRadii(new float[]{dp(8), dp(8), dp(8), dp(8), 0, 0, 0, 0});
         tab.setBackground(bg);
         // v8 sizing: wider tabs (width only — height/verticalPad untouched)
         // so short tabs stop crowding each other and mis-taps drop.

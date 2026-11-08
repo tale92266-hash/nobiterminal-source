@@ -593,8 +593,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         // onServiceConnected hunk still applies cleanly on top.
         deliverPendingTerminalInput();
         // v7: editor→terminal extras, startup picker, time-aware theme.
-        // v24 w48: compact the oversized motd art once (guarded, bg thread).
-        com.termux.app.nobi.NobiWelcome.compactMotdIfNeeded(TermuxActivity.this);
+        // v26: restore the reference welcome (5-line block wordmark +
+        // "Welcome back, Sam.") once, guarded, on a bg thread — replaces
+        // v24's motd compaction.
+        com.termux.app.nobi.NobiWelcome.restoreReferenceMotdIfNeeded(TermuxActivity.this);
         deliverNobiExtras();
         showNobiStartupPickerIfNeeded();
         applyNobiTimeAwareTheme();
@@ -1785,19 +1787,38 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
     }
 
-    // ---- v25: Chrome-type tab strip is the top bar (the v24 56dp
-    // MaterialToolbar heading is gone — Sam: tabs wala section hi
-    // heading ka kaam kare). The app-mark button at the strip's left
-    // opens the drawer; it replaces the toolbar nav icon. Session
-    // title lives in the active tab, not in a heading row.
-    private void setupNobiTabsBar() {
-        View menuButton = findViewById(R.id.nobi_tabs_menu);
-        if (menuButton != null) {
-            menuButton.setOnClickListener(v -> {
-                if (getDrawer() != null)
-                    getDrawer().openDrawer(android.view.Gravity.LEFT);
-            });
-        }
+    // ---- v26: 56dp toolbar WITH heading is back (spec Phase 2) — this
+    // supersedes v25, where the tab strip was the top bar and the
+    // toolbar was deleted. Nav icon opens the drawer (as in v24);
+    // title/subtitle are the static "NobiTerm / Linux Terminal" from
+    // the layout. Every action wires to its EXISTING implementation —
+    // no decorative icons:
+    //   search   -> NobiTerminalSearch (same call as the drawer Find row)
+    //   settings -> SettingsActivity (same intent as the drawer row)
+    //   overflow -> the terminal context menu (same as onCreateOptionsMenu)
+    private void setupNobiToolbar() {
+        com.google.android.material.appbar.MaterialToolbar toolbar =
+            findViewById(R.id.nobi_toolbar);
+        if (toolbar == null) return;
+        toolbar.setNavigationOnClickListener(v -> {
+            if (getDrawer() != null)
+                getDrawer().openDrawer(android.view.Gravity.LEFT);
+        });
+        toolbar.inflateMenu(R.menu.nobi_toolbar_menu);
+        toolbar.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nobi_toolbar_search) {
+                NobiTerminalSearch.show(this, getCurrentSession(), getTerminalView());
+                return true;
+            } else if (id == R.id.nobi_toolbar_settings) {
+                ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class));
+                return true;
+            } else if (id == R.id.nobi_toolbar_overflow) {
+                if (mTerminalView != null) mTerminalView.showContextMenu();
+                return true;
+            }
+            return false;
+        });
     }
 
     // ---- v24 w49: drawer header version + M3 scrim (spec 3). The
@@ -2055,8 +2076,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     // ---- v7 (70/81/82/83): terminal chrome setup ----
 
     private void setupNobiV7Chrome(Bundle savedInstanceState) {
-        // v25: tab-strip top bar setup (menu button opens the drawer).
-        setupNobiTabsBar();
+        // v26: toolbar with heading is the top bar again (tabs below it).
+        setupNobiToolbar();
         // v24 w49: drawer header version + M3 scrim.
         setupNobiDrawerHeader();
         // Bottom bar (81): tabs cycle, editor, settings in one tap.

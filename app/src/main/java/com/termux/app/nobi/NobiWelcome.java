@@ -10,25 +10,39 @@ import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * v24 w48: one-time compaction of the oversized NOBITA block-letter motd
- * (spec 2D). The motd lives in the bootstrap tarball, so a bootstrap patch
- * would only reach fresh installs AND rotate PATCH_HASH (cache MISS); the
- * app-start rewrite reaches existing installs too. Guarded: only rewrites
- * when the file contains the known 5-line block art (a line with "█") plus
- * the "Welcome back, Nobita." line; the two greeting lines are preserved
- * byte-for-byte and everything else is left alone. Runs on a background
- * thread; never throws (startup must never depend on it).
+ * v26: restore the REFERENCE welcome (spec Phase 4) instead of compacting
+ * it (v24's job). The cached bootstrap motd already has the 5-line block
+ * NOBITA wordmark (ANSI-256 blue-to-cyan gradient 27-51) + "Welcome back,
+ * Nobita." + "Your terminal. Your rules.", and termux-login.sh prints the
+ * time-aware "Good morning/afternoon/evening, Nobita." — but the v26
+ * reference screenshot shows the name as Sam, and v24's compaction had
+ * already shrunk the wordmark to one line on existing installs. So on app
+ * start (background thread, never throws) this rewrites the motd to the
+ * reference form — the same 5 block lines byte-for-byte, "Welcome back,
+ * Sam.", tagline unchanged — and the login.sh greeting name with it
+ * (time-aware logic untouched). Guarded: only touches files that contain
+ * the known Nobi forms; user shell config is never overwritten (a motd
+ * without the block art / compact mark / Nobita greeting is left alone,
+ * and login.sh is only touched when it contains the exact Nobi greeting
+ * line). Runs at app start, so — unlike a bootstrap change — existing
+ * installs see it too.
+ *
+ * NAME NOTE (v26 decision): v20 renamed the greeting Sam -&gt; Nobita.
+ * Sam's own v26 reference screenshot shows "Welcome back, Sam." /
+ * "Good evening, Sam.", so v26 follows the reference. If Sam wants
+ * Nobita back, it is a one-word revert here.
  */
 public final class NobiWelcome {
 
     private NobiWelcome() {
     }
 
-    public static void compactMotdIfNeeded(Context context) {
+    public static void restoreReferenceMotdIfNeeded(Context context) {
         try {
             new Thread(() -> {
                 try {
-                    compactMotd();
+                    restoreMotd();
+                    restoreLoginGreetingName();
                 } catch (Exception ignored) {
                 }
             }).start();
@@ -36,27 +50,49 @@ public final class NobiWelcome {
         }
     }
 
-    private static void compactMotd() throws Exception {
+    /** Reference motd: 5 block lines (cached bootstrap art, byte-exact). */
+    private static final String REFERENCE_MOTD =
+            "\u001b[1;38;5;27m█    █  ████  █████  █████ █████  ████\u001b[0m\n" +
+            "\u001b[1;38;5;33m██   █ █    █ █    █   █     █   █    █\u001b[0m\n" +
+            "\u001b[1;38;5;39m█ ██ █ █    █ █████    █     █   ██████\u001b[0m\n" +
+            "\u001b[1;38;5;45m█  ███ █    █ █    █   █     █   █    █\u001b[0m\n" +
+            "\u001b[1;38;5;51m█    █  ████  █████  █████   █   █    █\u001b[0m\n" +
+            "\u001b[1;38;5;141m   Welcome back, Sam.\u001b[0m\n" +
+            "\u001b[38;5;51m   Your terminal. Your rules.\u001b[0m\n";
+
+    private static void restoreMotd() throws Exception {
         File motd = new File(TermuxConstants.TERMUX_PREFIX_DIR_PATH, "etc/motd");
         if (!motd.isFile() || !motd.canRead() || !motd.canWrite()) return;
-        byte[] bytes = readAll(motd);
-        String text = new String(bytes, StandardCharsets.UTF_8);
-        if (!text.contains("█") || !text.contains("Welcome back, Nobita.")) return;
-        String welcome = null;
-        String rules = null;
-        for (String line : text.split("\n")) {
-            if (line.contains("Welcome back, Nobita.")) welcome = line;
-            if (line.contains("Your terminal. Your rules.")) rules = line;
-        }
-        if (welcome == null || rules == null) return;
-        // 7 lines -> 3 lines (~57% smaller): one restrained cyan wordmark
-        // plus the two original greeting lines, byte-for-byte.
-        String compact = "\033[1;38;5;51mNOBITA\033[0m\n" + welcome + "\n" + rules + "\n";
-        File tmp = new File(motd.getParentFile(), "motd.nobi-tmp");
+        String text = new String(readAll(motd), StandardCharsets.UTF_8);
+        // Already the reference form: block art + Sam greeting + tagline.
+        if (text.contains("\u2588") && text.contains("Welcome back, Sam.")
+            && text.contains("Your terminal. Your rules.")) return;
+        // Only rewrite known Nobi forms: the block art (any name), the
+        // v24-compacted single-line mark, or the Nobita greeting.
+        if (!text.contains("\u2588")
+            && !text.contains("Welcome back, Nobita.")
+            && !text.contains("\u001b[1;38;5;51mNOBITA\u001b[0m")) return;
+        writeAtomically(motd, REFERENCE_MOTD.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static void restoreLoginGreetingName() throws Exception {
+        File login = new File(TermuxConstants.TERMUX_PREFIX_DIR_PATH, "etc/termux-login.sh");
+        if (!login.isFile() || !login.canRead() || !login.canWrite()) return;
+        String text = new String(readAll(login), StandardCharsets.UTF_8);
+        // Only the exact Nobi greeting line; the time-aware case logic
+        // above it is untouched.
+        if (!text.contains("_nobi_greeting") || !text.contains(", Nobita.")) return;
+        String updated = text.replace(", Nobita.", ", Sam.");
+        if (updated.equals(text)) return;
+        writeAtomically(login, updated.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static void writeAtomically(File target, byte[] bytes) throws Exception {
+        File tmp = new File(target.getParentFile(), target.getName() + ".nobi-tmp");
         try (FileOutputStream out = new FileOutputStream(tmp)) {
-            out.write(compact.getBytes(StandardCharsets.UTF_8));
+            out.write(bytes);
         }
-        if (!tmp.renameTo(motd)) tmp.delete();
+        if (!tmp.renameTo(target)) tmp.delete();
     }
 
     private static byte[] readAll(File file) throws Exception {

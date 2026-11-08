@@ -1035,10 +1035,15 @@ public final class TerminalView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (mEmulator == null) {
-            // v24 w48: no-emulator fallback = design-system terminal bg
-            // (#080D1C) instead of pure black, so a session switch never
-            // flashes a black frame.
-            canvas.drawColor(0XFF080D1C);
+            // v26: the TerminalView background IS the wallpaper now, and
+            // View.draw() already painted it before onDraw() — so only
+            // paint a solid colour when there is no background drawable
+            // at all. Painting solid here used to cover the wallpaper on
+            // every session switch (black/navy flash). Fallback colour
+            // is the spec terminal bg (#050A19), same family as the
+            // wallpaper base.
+            if (getBackground() == null)
+                canvas.drawColor(0XFF050A19);
         } else {
             // render the terminal view and highlight any selected text
             int[] sel = mDefaultSelectors;

@@ -7,9 +7,26 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true">
 
-    <!-- v25: NO separate heading — the Chrome-type tab strip below IS the
-         top bar (Sam: tabs wala section hi heading ka kaam kare). The v24
-         56dp MaterialToolbar is gone; session title lives in the tab. -->
+    <!-- v26: the 56dp toolbar WITH heading is back (spec Phase 2 +
+         reference screenshot) — this supersedes v25's heading removal
+         (the tab strip was the top bar in v25 only). Hamburger opens the
+         drawer, the mark + "NobiTerm / Linux Terminal" is the heading,
+         and search / settings / overflow are wired in setupNobiToolbar().
+         The tabs bar sits directly below it. -->
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/nobi_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nobi_ds_toolbar_height"
+        android:background="@color/nobi_ds_toolbar_bg"
+        app:navigationIcon="@drawable/ic_nobi_menu"
+        app:logo="@drawable/ic_nobi_toolbar_mark"
+        app:title="@string/nobi_toolbar_title"
+        app:subtitle="@string/nobi_toolbar_subtitle"
+        app:titleTextAppearance="@style/NobiDsToolbarTitle"
+        app:subtitleTextAppearance="@style/NobiDsToolbarSubtitle"
+        app:titleTextColor="@color/nobi_ds_text_primary"
+        app:subtitleTextColor="@color/nobi_ds_text_secondary" />
 
     <LinearLayout
         android:id="@+id/nobi_tabs_bar"
@@ -17,15 +34,6 @@
         android:layout_height="@dimen/nobi_ds_tabs_bar_height"
         android:orientation="horizontal"
         android:background="@color/nobi_ds_app_bg">
-
-        <!-- App-mark button: opens the drawer (was the toolbar nav icon). -->
-        <ImageView
-            android:id="@+id/nobi_tabs_menu"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:padding="12dp"
-            android:contentDescription="Open navigation drawer"
-            android:src="@drawable/ic_nobi_menu" />
 
         <HorizontalScrollView
             android:id="@+id/nobi_tabs_scroll_view"
@@ -62,7 +70,7 @@
         android:paddingEnd="12dp"
         android:paddingTop="2dp"
         android:paddingBottom="4dp"
-        android:background="@color/nobi_ds_surface"
+        android:background="@color/nobi_ds_app_bg"
         android:textColor="@color/nobi_ds_text_secondary"
         android:textSize="12sp"
         android:maxLines="1"
@@ -83,11 +91,20 @@
             android:layout_above="@+id/terminal_toolbar_view_pager"
             android:layout_height="match_parent">
 
+            <!-- v26: terminal wallpaper — the wave art derived from the
+                 reference screenshot, attached to the actual TerminalView
+                 background. The renderer never paints the default bg
+                 (only non-default backgrounds), so the wallpaper shows
+                 through everywhere the terminal has default bg, and text,
+                 cursor, selection and ANSI colours draw over it. No
+                 ImageView on top, no fake output, no touch interception
+                 (backgrounds don't intercept). -->
             <com.termux.view.TerminalView
                 android:id="@+id/terminal_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="@dimen/nobi_ds_terminal_padding"
+                android:background="@drawable/nobi_terminal_wallpaper"
                 android:defaultFocusHighlightEnabled="false"
                 android:focusableInTouchMode="true"
                 android:scrollbarThumbVertical="@drawable/terminal_scroll_shape"
