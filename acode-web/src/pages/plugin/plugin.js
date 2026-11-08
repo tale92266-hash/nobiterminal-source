@@ -579,6 +579,7 @@ export default async function PluginInclude(
 	async function loadAd() {
 	return;
 }
+}
 
 function isValidSource(source) {
 	return source ? source.startsWith(Url.join(config.API_BASE, "plugin")) : true;
