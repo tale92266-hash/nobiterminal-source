@@ -277,4 +277,9 @@
 
     <string name="nobi_settings_save_failed">Could not save the setting. Please try again.</string>
 
+    <string name="nobi_apt_update_failed_title">Apt update failed</string>
+    <string name="nobi_apt_update_failed_message">Nobi sources are set, but the package lists could not be downloaded. Check your connection and try again.</string>
+    <string name="nobi_apt_update_retry">Retry</string>
+    <string name="nobi_apt_update_later">Later</string>
+
 </resources>
