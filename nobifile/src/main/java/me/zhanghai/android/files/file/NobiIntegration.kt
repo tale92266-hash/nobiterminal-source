@@ -24,6 +24,7 @@ import android.net.Uri
 import android.widget.Toast
 import com.nobifile.manager.R
 import java8.nio.file.Path
+import me.zhanghai.android.files.filelist.name
 import me.zhanghai.android.files.provider.linux.isLinuxPath
 import me.zhanghai.android.files.util.showToast
 
