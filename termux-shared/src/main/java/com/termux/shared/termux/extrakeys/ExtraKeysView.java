@@ -471,18 +471,27 @@ public final class ExtraKeysView extends GridLayout {
                 // clipping. Applied to every key incl. special buttons
                 // (the same setText path serves them) and to the popup
                 // button in showPopup().
+                // v31.1 (item 5): at 14sp max the text still touched
+                // the button borders ("HOME"/"PGDN" in the v31
+                // screenshot) — max is now 12sp and every key gets
+                // 6dp horizontal padding, so the label sits
+                // comfortably inside the key with space on all sides.
+                // Still one line, never wrapped or cut.
                 button.setSingleLine(true);
                 button.setMaxLines(1);
                 button.setEllipsize(null);
                 TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(button,
-                    8, 14, 1, TypedValue.COMPLEX_UNIT_SP);
+                    8, 12, 1, TypedValue.COMPLEX_UNIT_SP);
                 // v15: resting background was never set (buttons started
                 // v15: transparent, showing the bar behind them) — set it explicitly.
                 button.setBackground(nobiKeyBackground(mButtonBackgroundColor));
                 // v27: clear any MaterialButton tint (see nobiSetKeyBackground).
                 button.setBackgroundTintList(null);
                 button.setAllCaps(mButtonTextAllCaps);
-                button.setPadding(0, 0, 0, 0);
+                // v31.1 (item 5): 6dp horizontal padding — the label
+                // must not touch the key borders.
+                int nobiKeyPaddingPx = (int) (6f * getResources().getDisplayMetrics().density + 0.5f);
+                button.setPadding(nobiKeyPaddingPx, 0, nobiKeyPaddingPx, 0);
 
                 button.setOnClickListener(view -> {
                     performExtraKeyButtonHapticFeedback(view, buttonInfo, button);
@@ -677,9 +686,12 @@ public final class ExtraKeysView extends GridLayout {
         button.setSingleLine(true);
         button.setMaxLines(1);
         button.setEllipsize(null);
+        // v31.1 (item 5): same 12sp max + 6dp side padding as the
+        // keys themselves, so the popup label doesn't touch its border.
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(button,
-            8, 14, 1, TypedValue.COMPLEX_UNIT_SP);
-        button.setPadding(0, 0, 0, 0);
+            8, 12, 1, TypedValue.COMPLEX_UNIT_SP);
+        int nobiKeyPaddingPx = (int) (6f * getResources().getDisplayMetrics().density + 0.5f);
+        button.setPadding(nobiKeyPaddingPx, 0, nobiKeyPaddingPx, 0);
         button.setMinHeight(0);
         button.setMinWidth(0);
         button.setMinimumWidth(0);

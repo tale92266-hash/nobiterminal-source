@@ -23,6 +23,7 @@
 
   &::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.3);
+    background-color: color-mix(in srgb, var(--primary-text-color) 28%, transparent);
     border-radius: 3px;
   }
 
@@ -32,6 +33,7 @@
 
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary-text-color) 28%, transparent) transparent;
 
   .list {
     min-width: 100%;
@@ -71,6 +73,13 @@
     text-overflow: ellipsis !important;
   }
 
+  /* Nobi v31.1: the open folder's header row reads as a section header. */
+  > .list > .tile[data-type="root"] {
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid color-mix(in srgb, var(--primary-text-color) 10%, transparent);
+  }
+
   /* Add indent guides for folders (excluding first level) */
   .list.collapsible > ul > .collapsible > ul {
     position: relative;
@@ -84,6 +93,7 @@
       height: 100%;
       width: 1px;
       background: var(--border-color);
+      background: color-mix(in srgb, var(--active-color) 30%, transparent);
       z-index: 0;
     }
 
@@ -99,6 +109,7 @@
         height: 100%;
         width: 1px;
         background: var(--border-color);
+        background: color-mix(in srgb, var(--active-color) 30%, transparent);
         z-index: 0;
       }
     }
@@ -153,6 +164,7 @@ $root-actions-ease: cubic-bezier(0.2, 0, 0, 1);
 
       &:hover {
         opacity: 1;
+        color: var(--active-color);
         background-color: rgba(127, 127, 127, 0.14);
       }
     }

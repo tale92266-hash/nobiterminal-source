@@ -44,13 +44,21 @@
          and the whole drawer (APPLICATION section included) is visible.
          The restructure also gives the drawer ~48dp more height (the
          tabs strip is inside it now), which is what lets the full menu
-         fit (see the 44dp drawer rows, v31). -->
+         fit (see the 44dp drawer rows, v31).
+         v31.1 (item 1): the v31 structure was already weight-based
+         (DrawerLayout 0dp + weight 1, keys outside below it) — traced
+         in activity_termux.xml — but the drawer ended FLUSH against
+         the keys (gap ~1dp), so on-device it still read as going
+         UNDER the buttons. Explicit 8dp bottom margin on the
+         DrawerLayout: the drawer now provably ends 8dp above the
+         extra-keys bar, with terminal wallpaper visible in the gap. -->
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -187,59 +195,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-            <!-- v24 w49: compact M3 drawer header (spec 3): icon +
-                 app name + "Developer workspace" + real version.
-                 Replaces the v5 settings-gear row (gone since v5,
-                 still wired — the wiring is removed in code).
-                 Icon is ic_foreground (transparent N mark), NOT
-                 nobi_app_icon (that vector has a baked bg rect). -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingTop="12dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_foreground" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nobi_toolbar_title"
-                        android:textColor="@color/nobi_ds_drawer_text"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nobi_drawer_subtitle"
-                        android:textColor="@color/nobi_ds_drawer_text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/nobi_drawer_version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/nobi_ds_drawer_text_secondary"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
+            <!-- v31.1 (item 2): the drawer header block (N logo +
+                 "Nobi Terminal" + "Linux Terminal" + version) is GONE —
+                 the drawer starts directly with WORKSPACE. The
+                 version TextView (nobi_drawer_version) is removed
+                 with it; TermuxActivity.setupNobiDrawerHeader() no
+                 longer sets it (only the scrim stays). -->
             <LinearLayout
                 android:id="@+id/nobi_drawer_menu"
                 android:layout_width="match_parent"

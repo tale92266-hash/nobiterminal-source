@@ -276,63 +276,52 @@ public class NobiTabsController {
         // v7 (71/84/87): tab style + density.
         SharedPreferences v7Prefs = mActivity.getSharedPreferences("nobi_v7", Context.MODE_PRIVATE);
         String tabStyle = v7Prefs.getString("tab_style", "rounded");
-        boolean compact = "compact".equals(v7Prefs.getString("density", "comfortable"));
         int activeText = isActive ? dsColor(R.color.nobi_ds_text_primary)
             : dsColor(R.color.nobi_ds_text_secondary);
         int failedText = dsColor(R.color.nobi_ds_error);
-        int verticalPad = dp(compact ? 2 : 4);
-        // v27: reference tabs — fully rounded cards (12dp ALL corners),
-        // 1dp outline, session number, restrained blue glow on the
-        // active tab. Active = blue gradient (bright top -> #12345C) +
-        // 1dp #168BFF border + a soft blue halo ring just inside the
-        // edge (outer layer in accent blue at low alpha, inner gradient
-        // inset 2dp). Inactive = dark navy surface + 1dp #26354A border.
-        // v31: the ">_" terminal icon is gone — the session NUMBER
-        // (1, 2, 3...) stands in its place. 8dp between tabs (4dp
-        // margins each side), 36dp tall (2dp vertical margins in the
-        // 40dp strip). Order, persistence, drag-reorder, rename, notes,
-        // colours and running/exited states are all untouched.
-        android.graphics.drawable.GradientDrawable tabBg =
-            new android.graphics.drawable.GradientDrawable();
+        // v31.1 (item 7): Acode-style tabs — SAME TO SAME as the
+        // editor's .open-file-list (acode-web src/main.scss): 30px
+        // strip, 120px-wide square tabs (no rounding, flush against
+        // each other), active tab = 2px top border in the accent
+        // colour + darkened body. The v27 rounded cards (12dp
+        // corners, 1dp outline, blue halo) and the v31 36dp floating
+        // card are gone. The session NUMBER (v31) still stands where
+        // the ">_" icon was. Order, persistence, drag-reorder,
+        // rename, notes, colours and running/exited states are all
+        // untouched.
         android.graphics.drawable.Drawable tabBackground;
         if (isActive) {
-            tabBg.setOrientation(
-                android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM);
-            tabBg.setColors(new int[]{
-                dsColor(R.color.nobi_ds_tab_active_top),
-                dsColor(R.color.nobi_ds_selected)});
-            tabBg.setStroke(dp(1), dsColor(R.color.nobi_ds_accent));
-            tabBg.setCornerRadius(dp(10));
-            android.graphics.drawable.GradientDrawable halo =
+            // Layer 0 = accent (full rect), layer 1 = selected body
+            // inset 2dp from the top -> an exact 2dp top border.
+            android.graphics.drawable.GradientDrawable border =
                 new android.graphics.drawable.GradientDrawable();
-            halo.setColor(dsColor(R.color.nobi_ds_accent));
-            halo.setAlpha(70);
-            halo.setCornerRadius(dp(12));
+            border.setColor(dsColor(R.color.nobi_ds_accent));
+            android.graphics.drawable.GradientDrawable body =
+                new android.graphics.drawable.GradientDrawable();
+            body.setColor(dsColor(R.color.nobi_ds_selected));
             android.graphics.drawable.LayerDrawable layered =
                 new android.graphics.drawable.LayerDrawable(
-                    new android.graphics.drawable.Drawable[]{halo, tabBg});
-            layered.setLayerInset(1, dp(2), dp(2), dp(2), dp(2));
+                    new android.graphics.drawable.Drawable[]{border, body});
+            layered.setLayerInset(1, 0, dp(2), 0, 0);
             tabBackground = layered;
         } else {
+            android.graphics.drawable.GradientDrawable tabBg =
+                new android.graphics.drawable.GradientDrawable();
             tabBg.setColor(dsColor(R.color.nobi_ds_surface));
-            tabBg.setStroke(dp(1), dsColor(R.color.nobi_ds_outline));
-            tabBg.setCornerRadius(dp(12));
             tabBackground = tabBg;
         }
         tab.setBackground(tabBackground);
-        // v8 sizing: wider tabs (width only — height/verticalPad untouched)
-        // so short tabs stop crowding each other and mis-taps drop.
-        // v31: 4dp right padding so the close button sits in the tab's
-        // right corner (was 8dp — the × looked glued inside the tab).
-        tab.setPadding(dp(12), verticalPad, dp(4), verticalPad);
+        // Square Acode tile: no vertical padding (children are centred
+        // by the tab's CENTER_VERTICAL gravity), 10dp start / 4dp end.
+        tab.setPadding(dp(10), 0, dp(4), 0);
 
+        // Fixed 120dp width, MATCH_PARENT height (30dp strip), flush
+        // against neighbouring tabs (0 margins) — Acode tiles sit edge
+        // to edge in the strip, no gaps.
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        // 4dp each side (8dp between tabs), 2dp top/bottom so the tab is
-        // a 36dp floating card in the 40dp strip — not flush like v25/v26.
-        tabParams.setMargins(dp(4), dp(2), dp(4), dp(2));
+            dp(120), LinearLayout.LayoutParams.MATCH_PARENT);
+        tabParams.setMargins(0, 0, 0, 0);
         tab.setLayoutParams(tabParams);
-        tab.setMinimumWidth(dp(88));
 
         // v6 (10): per-tab colour dot, shown before the title when set.
         Integer tabColor = loadTabColors(mActivity).get(session.mHandle);
@@ -355,27 +344,55 @@ public class NobiTabsController {
         numberView.setTextColor(isActive ? dsColor(R.color.nobi_ds_accent) : activeText);
         numberView.setPadding(0, 0, dp(6), 0);
         tab.addView(numberView);
-
-        TextView titleView = new TextView(mActivity);
-        titleView.setText(resolveTabLabel(session, displayIndex));
-        titleView.setSingleLine(true);
-        titleView.setEllipsize(TextUtils.TruncateAt.END);
-        titleView.setMaxWidth(dp(130));
-        titleView.setTextSize(13);
-        titleView.setTextColor(activeText);
-        // v7 (71): underline style underlines the active tab's title;
-        // dots style prefixes the active tab with an accent dot.
-        if ("underline".equals(tabStyle) && isActive) {
-            titleView.setPaintFlags(titleView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        } else if ("dots".equals(tabStyle) && isActive) {
-            titleView.setText("● " + resolveTabLabel(session, displayIndex));
-        }
+        // Exited session: strike through the number too (the title,
+        // which used to carry this, is hidden when it equals the
+        // number — see below).
         if (!session.isRunning()) {
-            titleView.setPaintFlags(titleView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            numberView.setPaintFlags(numberView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             if (session.getExitStatus() != 0)
-                titleView.setTextColor(failedText);
+                numberView.setTextColor(failedText);
         }
-        tab.addView(titleView);
+
+        // v31.1 (item 3): the title is shown ONLY when it says
+        // something the number doesn't — resolveTabLabel falls back
+        // to the session number itself ("1"), so showing both gave
+        // "1 1 ×" in v31. Number-only tabs show just the number.
+        // v31.1 (item 4): the title (or a spacer when there is no
+        // title) takes weight 1, so the × is always pinned to the
+        // tab's far right end — before this the tab packed its
+        // children from the left and the × sat mid-tab whenever the
+        // tab was wider than its content (minWidth 88dp).
+        String tabLabel = resolveTabLabel(session, displayIndex);
+        if (!tabLabel.equals(String.valueOf(displayIndex + 1))) {
+            TextView titleView = new TextView(mActivity);
+            titleView.setText(tabLabel);
+            titleView.setSingleLine(true);
+            titleView.setEllipsize(TextUtils.TruncateAt.END);
+            titleView.setTextSize(13);
+            titleView.setTextColor(activeText);
+            // v7 (71): underline style underlines the active tab's title;
+            // dots style prefixes the active tab with an accent dot.
+            if ("underline".equals(tabStyle) && isActive) {
+                titleView.setPaintFlags(titleView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            } else if ("dots".equals(tabStyle) && isActive) {
+                titleView.setText("● " + tabLabel);
+            }
+            if (!session.isRunning()) {
+                titleView.setPaintFlags(titleView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                if (session.getExitStatus() != 0)
+                    titleView.setTextColor(failedText);
+            }
+            LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            titleView.setLayoutParams(titleParams);
+            tab.addView(titleView);
+        } else {
+            View spacer = new View(mActivity);
+            LinearLayout.LayoutParams spacerParams = new LinearLayout.LayoutParams(
+                0, 0, 1f);
+            spacer.setLayoutParams(spacerParams);
+            tab.addView(spacer);
+        }
 
         // v31: close button pinned to the tab's RIGHT corner — 28dp
         // square tap target, 18sp ×, no side padding (the tab's own

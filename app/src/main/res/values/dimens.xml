@@ -19,7 +19,9 @@
     <dimen name="nobi_ds_toolbar_icon_size">24dp</dimen>
     <!-- Session tabs bar (v25: the strip IS the top bar, Chrome height).
          v31: 40dp — shorter tabs, tab card is 36dp (2dp margins). -->
-    <dimen name="nobi_ds_tabs_bar_height">40dp</dimen>
+    <!-- v31.1 (item 7): Acode-style tabs — 30dp strip, same as the
+         editor's .open-file-list (30px). -->
+    <dimen name="nobi_ds_tabs_bar_height">30dp</dimen>
     <dimen name="nobi_ds_tab_corner">8dp</dimen>
     <!-- Navigation drawer (spec 3). -->
     <dimen name="nobi_ds_drawer_width">304dp</dimen>

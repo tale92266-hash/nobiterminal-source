@@ -1920,22 +1920,15 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         });
     }
 
-    // ---- v24 w49: drawer header version + M3 scrim (spec 3). The
-    // version is read from the real package info at runtime, never
-    // hardcoded. The scrim is the M3 32% black, set explicitly (the
-    // DrawerLayout default is 60% and was never set before). The black
-    // strip root fix is: full-bleed DrawerLayout (w48 removed the 3dp
-    // container margins) + 304dp drawer + explicit scrim + rounded
-    // trailing corners — no overlay hack, no hardcoded screen width.
+    // ---- v31.1 (item 2): the drawer header block is gone (the
+    // drawer starts directly with WORKSPACE), so there is no version
+    // view to set anymore. Only the scrim stays: the M3 32% black, set
+    // explicitly (the DrawerLayout default is 60% and was never set
+    // before). The black strip root fix is: full-bleed DrawerLayout
+    // (w48 removed the 3dp container margins) + 304dp drawer +
+    // explicit scrim + rounded trailing corners — no overlay hack,
+    // no hardcoded screen width.
     private void setupNobiDrawerHeader() {
-        android.widget.TextView versionView = findViewById(R.id.nobi_drawer_version);
-        if (versionView != null) {
-            try {
-                String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-                versionView.setText(version != null ? "v" + version : "");
-            } catch (Exception ignored) {
-            }
-        }
         if (getDrawer() != null) getDrawer().setScrimColor(0x52000000);
     }
 

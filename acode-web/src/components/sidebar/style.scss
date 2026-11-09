@@ -48,13 +48,22 @@ body.no-animation {
     width: 5px;
     margin-left: -2.5px;
     z-index: 110;
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:active {
+      background-color: var(--active-color);
+      background-color: color-mix(in srgb, var(--active-color) 55%, transparent);
+    }
   }
 
   .apps {
-    width: 52px;
-    min-width: 52px;
+    width: 56px;
+    min-width: 56px;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.18);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid color-mix(in srgb, var(--primary-text-color) 10%, transparent);
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -107,7 +116,7 @@ body.no-animation {
 
         &:hover {
           transform: scale(1.05);
-          border-color: rgba(255, 255, 255, 0.3);
+          border-color: var(--active-color);
         }
       }
 
@@ -115,7 +124,7 @@ body.no-animation {
         height: 40px;
         width: 40px;
         color: currentColor;
-        font-size: 2.8em;
+        font-size: 2.2em;
         border-radius: 10px;
         opacity: 0.6;
         transition: all 0.2s ease;
@@ -126,7 +135,9 @@ body.no-animation {
 
         &:hover {
           opacity: 0.9;
+          color: var(--active-color);
           background-color: rgba(255, 255, 255, 0.08);
+          background-color: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
         }
 
         &.active {
@@ -146,13 +157,14 @@ body.no-animation {
       }
     }
 
+    // Nobi v31.1 rail: roomier 44px targets, Nobi-blue active pill.
     .icon {
-      height: 40px;
-      width: 40px;
-      min-height: 40px;
+      height: 44px;
+      width: 44px;
+      min-height: 44px;
       color: currentColor;
-      font-size: 1.3em;
-      border-radius: 10px;
+      font-size: 1.4em;
+      border-radius: 12px;
       opacity: 0.55;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       margin: 0 auto;
@@ -160,7 +172,7 @@ body.no-animation {
       position: relative;
       box-sizing: border-box;
       text-align: center;
-      line-height: 40px;
+      line-height: 44px;
 
       // Active indicator bar using ::after to not interfere with font icon's ::before
       &::after {
@@ -170,32 +182,36 @@ body.no-animation {
         top: 50%;
         transform: translateY(-50%) scaleY(0);
         width: 3px;
-        height: 20px;
-        background-color: currentColor;
+        height: 22px;
+        background-color: var(--active-color);
         border-radius: 0 2px 2px 0;
         transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
         opacity: 0;
       }
 
       &:hover {
-        opacity: 0.85;
+        opacity: 0.9;
         background-color: rgba(255, 255, 255, 0.08);
+        background-color: color-mix(in srgb, var(--primary-text-color) 10%, transparent);
       }
 
       &.active {
         opacity: 1;
-        background-color: rgba(255, 255, 255, 0.12);
+        color: rgb(255, 255, 255);
+        background-color: var(--active-color);
+        background-color: color-mix(in srgb, var(--active-color) 85%, transparent);
 
         &::after {
           transform: translateY(-50%) scaleY(1);
           opacity: 1;
+          background-color: rgb(255, 255, 255);
         }
       }
 
       // Unread dot, drawn as a background so ::before/::after stay free
       body.has-unread-notifications &[data-id="notification"] {
         background-image: radial-gradient(
-          circle at 28px 12px,
+          circle at 32px 12px,
           var(--active-color, #3399ff) 3px,
           transparent 3.5px
         );
@@ -329,19 +345,35 @@ body.no-animation {
         height: calc(100% - 36px);
 
         .tile:active {
+          background-color: rgba(127, 127, 127, 0.1);
+          background-color: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+          border-radius: 8px;
+
           >*:nth-child(2) {
-            color: rgb(255, 215, 0);
+            color: var(--primary-text-color);
           }
         }
 
         li {
+          border-radius: 8px;
+
           >*:nth-child(2) {
             color: currentColor;
           }
 
+          &:hover {
+            background-color: rgba(127, 127, 127, 0.08);
+            background-color: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+          }
+
+          // Nobi v31.1: the open file is a blue pill, not gold text.
           &.active {
+            background-color: var(--active-color);
+            background-color: color-mix(in srgb, var(--active-color) 18%, transparent);
+
             >*:nth-child(2) {
-              color: rgb(255, 215, 0);
+              color: var(--primary-text-color);
+              font-weight: 600;
             }
           }
         }
@@ -374,7 +406,7 @@ body.no-animation {
     transition: all 0.2s ease;
 
     &:focus {
-      border-color: var(--border-color) !important;
+      border-color: var(--active-color) !important;
       background: var(--secondary-color);
       background: color-mix(in srgb, var(--secondary-color) 10%, transparent);
       box-shadow: 0 0 0 2px var(---box-shadow-color);
@@ -401,6 +433,8 @@ body.no-animation {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid color-mix(in srgb, var(--primary-text-color) 10%, transparent);
 
     .title {
       display: flex;
@@ -408,7 +442,8 @@ body.no-animation {
       height: 36px;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
   }
 }
@@ -431,8 +466,9 @@ body.no-animation {
   width: 200px;
   background-color: var(--popup-background-color);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px var(--box-shadow-color);
   display: none;
   z-index: 1000;
   overflow: hidden;
@@ -484,9 +520,12 @@ body.no-animation {
     display: flex;
     align-items: center;
     gap: 8px;
+    border-radius: 8px;
+    margin: 2px 4px;
 
     &:hover {
-      background-color: var(--active-icon-color);
+      background-color: var(--active-color);
+      background-color: color-mix(in srgb, var(--active-color) 14%, transparent);
     }
   }
 

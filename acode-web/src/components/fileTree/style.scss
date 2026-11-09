@@ -38,7 +38,7 @@
         max-width: none;
     }
 
-    // Indent guides
+    // Indent guides (enabled when the tree carries .show-indent-guide)
     &.show-indent-guide {
         >.list.collapsible>ul.folder-content {
             &::before {
@@ -49,14 +49,22 @@
                 height: 100%;
                 width: 1px;
                 background: var(--border-color);
+                background: color-mix(in srgb, var(--active-color) 30%, transparent);
                 z-index: 0;
             }
         }
     }
 
+    // Nobi v31.1: rows get a soft hover pill; an open folder's name is bold.
     .tile {
         min-width: 100%;
         width: max-content;
+        border-radius: 8px;
+
+        &:hover {
+            background-color: rgba(127, 127, 127, 0.08);
+            background-color: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+        }
 
         >.text {
             white-space: nowrap !important;
@@ -64,6 +72,10 @@
             width: max-content !important;
             text-overflow: clip !important;
         }
+    }
+
+    .list.collapsible:not(.hidden)>.tile>.text {
+        font-weight: 600;
     }
 
     // File items

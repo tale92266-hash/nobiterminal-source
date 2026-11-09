@@ -327,8 +327,8 @@ export function createBuiltinTheme() {
 		folderNames: createFolderNames(),
 		file: "file_type_text",
 		folder: "folder_base",
-		folderExpanded: "folder_base",
+		folderExpanded: "folder_base_open",
 		rootFolder: "folder_base",
-		rootFolderExpanded: "folder_base",
+		rootFolderExpanded: "folder_base_open",
 	};
 }
