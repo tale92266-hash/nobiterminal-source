@@ -12,6 +12,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegateCompat
+import me.zhanghai.android.files.app.AppActivity
 import me.zhanghai.android.files.app.application
 import me.zhanghai.android.files.settings.Settings
 import me.zhanghai.android.files.util.SimpleActivityLifecycleCallbacks
@@ -27,11 +28,23 @@ object NightModeHelper {
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
                 override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                    // v29.2: same host-app guard as CustomThemeHelper — host
+                    // activities (e.g. TermuxActivity, CordovaActivity) are
+                    // NOT AppActivity subclasses and never call apply().
+                    // Skipping them instead of throwing; the old check()
+                    // would crash the host app on launch right after the
+                    // CustomThemeHelper crash was fixed.
+                    if (activity !is AppActivity) {
+                        return
+                    }
                     check(activity in activities) { "Activity must extend AppActivity: $activity" }
                 }
 
                 override fun onActivityDestroyed(activity: Activity) {
-                    activities -= activity as AppCompatActivity
+                    // v29.2: only AppCompatActivity instances are ever
+                    // tracked; host activities (e.g. CordovaActivity
+                    // extends plain Activity) must not crash this cast.
+                    (activity as? AppCompatActivity)?.let { activities -= it }
                 }
             })
     }

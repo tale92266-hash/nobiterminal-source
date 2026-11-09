@@ -12,6 +12,7 @@ import android.os.Bundle
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import com.nobifile.manager.R
+import me.zhanghai.android.files.app.AppActivity
 import me.zhanghai.android.files.compat.recreateCompat
 import me.zhanghai.android.files.compat.setThemeCompat
 import me.zhanghai.android.files.compat.themeResIdCompat
@@ -26,6 +27,14 @@ object CustomThemeHelper {
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                // v29.2: this module lives inside a host app (NobiTerminal) whose
+                // activities (e.g. TermuxActivity) are NOT AppActivity subclasses
+                // and never call apply(). Skipping them instead of throwing —
+                // the old check() crashed the host app on launch. Only
+                // NobiFile's own AppActivity subclasses are theme-tracked.
+                if (activity !is AppActivity) {
+                    return
+                }
                 check(activityBaseThemes.containsKey(activity)) {
                     "Activity must extend AppActivity: $activity"
                 }

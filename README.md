@@ -1,7 +1,7 @@
-# NobiTerminal v29.1 — full source snapshot
+# NobiTerminal v29.2 — full source snapshot
 
-This repo is the **complete app source tree for NobiTerminal v29.1**
-(the version shipped as the v29.1 APK on 2026-11-09). It exists so the app's
+This repo is the **complete app source tree for NobiTerminal v29.2**
+(the version shipped as the v29.2 APK on 2026-11-09). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
 > This snapshot **is** the build route (since the 2026-11-08 migration to
@@ -16,7 +16,7 @@ source can be browsed, understood, and edited by hand in one place.
 > in place for every version — no new repo per version. `main` always
 > holds the latest shipped version's tree; each version is also kept as a
 > lightweight tag (`v20`, `v21`, …). This file describes the tree at
-> `main` (v29.1). The v20–v29 trees are tags `v20`–`v29`.
+> `main` (v29.2). The v20–v29 trees are tags `v20`–`v29`.
 
 ## What this snapshot was made from (NEW pattern — plugin + base patches)
 

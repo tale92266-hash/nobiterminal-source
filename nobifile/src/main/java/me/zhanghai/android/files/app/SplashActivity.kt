@@ -7,10 +7,13 @@
  * through its own intent filters, so nothing is lost. It is finished
  * before the file list appears and never stays in the back stack.
  *
- * Extends AppActivity on purpose: CustomThemeHelper.initialize() throws
- * for any activity that does not call apply() from AppActivity.onCreate.
- * The splash window background is drawn from the manifest theme before
- * onCreate, so apply() replacing the theme here changes nothing visible.
+ * Extends AppActivity on purpose: NobiFile activities must call apply()
+ * from AppActivity.onCreate to be theme-tracked. (v29.2: host activities
+ * that are not AppActivity subclasses are now skipped by the theme
+ * helpers instead of throwing, so this is only about NobiFile's own
+ * activities.) The splash window background is drawn from the manifest
+ * theme before onCreate, so apply() replacing the theme here changes
+ * nothing visible.
  */
 
 package me.zhanghai.android.files.app
