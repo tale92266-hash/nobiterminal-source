@@ -39,12 +39,12 @@
         </provider>
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" android:name="com.nobidev.browser.BrowserActivity" android:resizeableActivity="true" android:theme="@style/Theme.App.Activity" android:windowSoftInputMode="adjustResize" />
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" android:exported="false" android:launchMode="singleInstance" android:name="com.nobidev.crashhandler.CrashActivity" android:process=":crash" android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
-        <provider android:authorities="com.nobicode.editor.provider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
+        <provider android:authorities="com.nobiterminal.provider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_provider" />
         </provider>
         <service android:enabled="true" android:exported="false" android:foregroundServiceType="specialUse" android:name="com.nobicode.editor.rk.exec.terminal.TerminalService" />
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" android:name="com.nobidev.webview.WebViewActivity" android:resizeableActivity="true" android:theme="@style/Theme.App.Activity" android:windowSoftInputMode="adjustResize" />
-        <provider android:authorities="com.nobicode.editor.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
+        <provider android:authorities="com.nobiterminal.cdv.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_provider" />
         </provider>
     </application>
