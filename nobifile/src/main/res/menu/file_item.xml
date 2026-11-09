@@ -16,6 +16,10 @@
         android:title="@string/open_in_nobi_terminal" />
 
     <item
+        android:id="@+id/action_run_in_nobi_terminal"
+        android:title="@string/run_in_nobi_terminal" />
+
+    <item
         android:id="@+id/action_open_in_nobi_code"
         android:title="@string/open_in_nobi_code" />
 

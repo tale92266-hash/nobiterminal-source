@@ -73,6 +73,36 @@ object NobiIntegration {
     }
 
     /**
+     * v30: run [file] in the terminal — TermuxActivity gets the nobi_run_file
+     * extra and runs it in the file's folder session (tab stays open so the
+     * output can be read). Only script files (.sh/.py/.js) can run; the
+     * terminal shows a toast for anything else.
+     */
+    fun runInNobiTerminal(context: Context, file: FileItem) {
+        if (!file.path.isLinuxPath) {
+            context.showToast(R.string.nobi_terminal_open_failed)
+            return
+        }
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?: return
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        intent.putExtra("nobi_run_file", file.path.toString())
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            context.showToast(R.string.nobi_terminal_open_failed)
+        }
+    }
+
+    /** v30: script files that can run in the terminal (.sh/.py/.js). */
+    fun isRunnableScript(file: FileItem): Boolean {
+        if (file.attributes.isDirectory) return false
+        val name = file.name.lowercase()
+        return name.endsWith(".sh") || name.endsWith(".py") || name.endsWith(".js")
+    }
+
+    /**
      * Opens [file] in the in-app code editor (Acode,
      * com.nobicode.editor.MainActivity) via ACTION_VIEW with a file:// URI —
      * the intent the editor's handlers/intent.js opens (VIEW). v29: the old

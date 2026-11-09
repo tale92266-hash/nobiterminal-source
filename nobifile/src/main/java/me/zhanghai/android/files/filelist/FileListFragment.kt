@@ -897,6 +897,14 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             menu.findItem(R.id.action_extract).isVisible = areAllFilesArchiveFiles
             val isCurrentPathReadOnly = viewModel.currentPath.fileSystem.isReadOnly
             menu.findItem(R.id.action_archive).isVisible = !isCurrentPathReadOnly
+            // v30: cross-over — single selection only (a terminal opens in
+            // one folder / runs one file).
+            val singleFile = if (files.size == 1) files.single() else null
+            menu.findItem(R.id.action_open_in_nobi_terminal).isVisible =
+                singleFile != null && singleFile.path.isLinuxPath
+            menu.findItem(R.id.action_run_in_nobi_terminal).isVisible =
+                singleFile != null && singleFile.path.isLinuxPath
+                    && NobiIntegration.isRunnableScript(singleFile)
         }
         if (!overlayActionMode.isActive) {
             binding.appBarLayout.setExpanded(true)
@@ -928,6 +936,14 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             }
             R.id.action_cut -> {
                 cutFiles(viewModel.selectedFiles)
+                true
+            }
+            R.id.action_open_in_nobi_terminal -> {
+                openInNobiTerminal(viewModel.selectedFiles.single())
+                true
+            }
+            R.id.action_run_in_nobi_terminal -> {
+                runInNobiTerminal(viewModel.selectedFiles.single())
                 true
             }
             R.id.action_copy -> {
@@ -1263,6 +1279,11 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     override fun openInNobiTerminal(file: FileItem) {
         // v29: in-app terminal — no RUN_COMMAND permission needed.
         NobiIntegration.openInNobiTerminal(requireContext(), file)
+    }
+
+    override fun runInNobiTerminal(file: FileItem) {
+        // v30: run a script file in the terminal (tab stays open).
+        NobiIntegration.runInNobiTerminal(requireContext(), file)
     }
 
     private fun openFileWithIntent(file: FileItem, withChooser: Boolean) {

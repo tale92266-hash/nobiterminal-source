@@ -34,7 +34,7 @@ export default function openTabContextMenu(file) {
 
 	const menu = Contextmenu({
 		...positionMenu(file.tab),
-		innerHTML: getMenuItemsHtml,
+		innerHTML: () => getMenuItemsHtml(file),
 	});
 
 	const guardUntil = Date.now() + SYNTHETIC_CLICK_WINDOW;
@@ -173,17 +173,27 @@ function getEventClientPos(e) {
 	return { clientX: e.clientX ?? 0, clientY: e.clientY ?? 0 };
 }
 
-function getMenuItemsHtml() {
+function getMenuItemsHtml(file) {
 	const closeText = strings["close file"] || "Close file";
 	const closeAllText = strings["close all"] || "Close all";
 	const closeLeftText = strings["close tabs to left"] || "Close Left";
 	const closeRightText = strings["close tabs to right"] || "Close Right";
+	// v30: cross-over actions — only for real saved files, never for
+	// terminal tabs (they have no location to run/open).
+	const crossOver =
+		file && file.type !== "terminal" && file.location
+			? `
+		<li action="run-in-terminal">${strings["run in terminal"] || "Run in Terminal"}</li>
+		<li action="send-to-terminal">${strings["send to terminal"] || "Send to Terminal"}</li>
+		<li action="open-terminal-here">${strings["open terminal here"] || "Open Terminal Here"}</li>
+	`
+			: "";
 	return `
 		<li action="close-tab">${closeText}</li>
 		<li action="close-tabs-in-group">${closeAllText}</li>
 		<li action="close-tabs-to-left">${closeLeftText}</li>
 		<li action="close-tabs-to-right">${closeRightText}</li>
-	`;
+		${crossOver}`;
 }
 
 /**

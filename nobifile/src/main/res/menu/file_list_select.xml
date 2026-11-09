@@ -19,6 +19,19 @@
         android:title="@string/cut"
         app:showAsAction="always" />
 
+    <!-- v30: cross-over — single-selection only (visibility set in FileListFragment). -->
+    <item
+        android:id="@+id/action_open_in_nobi_terminal"
+        android:orderInCategory="100"
+        android:title="@string/open_in_nobi_terminal"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_run_in_nobi_terminal"
+        android:orderInCategory="100"
+        android:title="@string/run_in_nobi_terminal"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_copy"
         android:alphabeticShortcut="c"

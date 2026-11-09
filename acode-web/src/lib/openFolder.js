@@ -38,7 +38,7 @@ const isTermuxSafUri = (value = "") =>
 	value.startsWith("content://com.termux.documents/tree/");
 const isTerminalSafUri = (value = "") => isTermuxSafUri(value);
 
-const getTerminalPaths = () => {
+export const getTerminalPaths = () => {
 	const packageName = window.BuildInfo?.packageName || "com.nobicode.editor";
 	const dataDir = `/data/user/0/${packageName}`;
 	const nobiHome = `${dataDir}/files/home`;
@@ -46,14 +46,14 @@ const getTerminalPaths = () => {
 	return { nobiHome, nobiPrefix, dataDir };
 };
 
-const isTerminalAccessiblePath = (url = "") => {
+export const isTerminalAccessiblePath = (url = "") => {
 	if (isTerminalSafUri(url)) return true;
 	const cleanUrl = url.replace(/^file:\/\//, "");
 	// Any absolute device path can be cd-ed into from the NobiTerminal shell.
 	return cleanUrl.startsWith("/");
 };
 
-const convertToProotPath = (url = "") => {
+export const convertToProotPath = (url = "") => {
 	const { nobiHome } = getTerminalPaths();
 	if (isTermuxSafUri(url)) {
 		try {
@@ -487,6 +487,21 @@ async function handleContextmenu(type, url, name, $target) {
 		) {
 			options.push(INSTALL_PLUGIN);
 		}
+		// v30: runnable scripts get "Run in Terminal" (cd to the file's
+		// folder + run it with its interpreter, tab stays open).
+		if (
+			isTerminalAccessiblePath(url) &&
+			[".sh", ".py", ".js"].some((ext) =>
+				url.toLowerCase().endsWith(ext),
+			)
+		) {
+			const RUN_IN_TERMINAL = [
+				"run-in-terminal",
+				strings["run in terminal"] || "Run in Terminal",
+				"play_arrow",
+			];
+			options.push(RUN_IN_TERMINAL);
+		}
 	} else if (helpers.isDir(type)) {
 		options = [SELECT, COPY, CUT, COPY_RELATIVE_PATH, REMOVE, RENAME];
 
@@ -544,7 +559,7 @@ async function handleContextmenu(type, url, name, $target) {
 
 /**
  * @param {"dir"|"file"|"root"} type
- * @param {"select"|"copy"|"cut"|"delete"|"rename"|"paste"|"new file"|"new folder"|"cancel"|"open-folder"|"install-plugin"|"open-in-terminal"|"open-ssh-terminal"|"copy-relative-path"} action
+ * @param {"select"|"copy"|"cut"|"delete"|"rename"|"paste"|"new file"|"new folder"|"cancel"|"open-folder"|"install-plugin"|"open-in-terminal"|"run-in-terminal"|"open-ssh-terminal"|"copy-relative-path"} action
  * @param {string} url target url
  * @param {HTMLElement} $target target element
  * @param {string} name Name of file or folder
@@ -592,6 +607,14 @@ function execOperation(type, action, url, $target, name) {
 
 		case "open-in-terminal":
 			return openInTerminal();
+
+		case "run-in-terminal":
+			// v30: dynamic import — nobiTerminal imports this file, so a
+			// static import here would be circular. execOperation is not
+			// async, so return the promise (the caller awaits it).
+			return import(
+				/* webpackChunkName: "nobi-terminal" */ "lib/nobiTerminal"
+			).then(({ runFileInTerminal }) => runFileInTerminal(url, name));
 
 		case "open-ssh-terminal":
 			return openSshTerminal();

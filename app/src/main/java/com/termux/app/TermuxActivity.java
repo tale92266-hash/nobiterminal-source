@@ -173,6 +173,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     // v7: pending terminal↔editor extras (same fresh-launch guard as v6).
     /** Folder to focus-or-create a session in (editor "Open terminal here"). */
     private String mPendingTerminalCwd = null;
+    /** File to run in its folder's session, tab stays open (v30 file manager "Run in Terminal"). */
+    private String mPendingRunFile = null;
     /** One-shot run-and-back command (editor Run in Terminal). */
     private String mPendingRunAndReturn = null;
     private String mPendingRunCwd = null;
@@ -242,6 +244,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private static final int CONTEXT_MENU_HELP_ID = 7;
     private static final int CONTEXT_MENU_SETTINGS_ID = 8;
     private static final int CONTEXT_MENU_REPORT_ID = 9;
+    // v30: cross-over — terminal ⇄ file manager / editor.
+    private static final int CONTEXT_MENU_OPEN_IN_FILE_MANAGER_ID = 12;
+    private static final int CONTEXT_MENU_OPEN_IN_EDITOR_ID = 13;
 
     private static final String ARG_TERMINAL_TOOLBAR_TEXT_INPUT = "terminal_toolbar_text_input";
     private static final String ARG_ACTIVITY_RECREATED = "activity_recreated";
@@ -779,14 +784,17 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 // MainActivity) merged into this app. Pass the terminal home
                 // so a first open starts there (handlers/intent.js reads the
                 // nobi_open_folder extra; the editor's saved folders win).
+                // v30: shared current folder — open at the live session cwd
+                // when there is one, so editor/terminal/file manager agree.
                 Intent editorIntent = new Intent(this, com.nobicode.editor.MainActivity.class);
                 editorIntent.putExtra("nobi_open_folder",
-                        "file://" + TermuxConstants.TERMUX_HOME_DIR_PATH);
+                        "file://" + nobiCurrentFolder());
                 ActivityUtils.startActivity(this, editorIntent);
             });
         }
 
         // v29: File Manager (NobiFile) — opens at the terminal home.
+        // v30: shared current folder (see above).
         View nobiFileItem = findViewById(R.id.nobi_menu_nobifile);
         if (nobiFileItem != null) {
             nobiFileItem.setOnClickListener(v -> {
@@ -794,7 +802,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 Intent fileManagerIntent = new Intent(this,
                         me.zhanghai.android.files.filelist.FileListActivity.class);
                 fileManagerIntent.putExtra("com.nobifile.manager.extra.PATH_URI",
-                        "file://" + TermuxConstants.TERMUX_HOME_DIR_PATH);
+                        "file://" + nobiCurrentFolder());
                 ActivityUtils.startActivity(this, fileManagerIntent);
             });
         }
@@ -920,6 +928,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private void captureNobiExtras(Intent intent) {
         String cwd = intent.getStringExtra("nobi_terminal_cwd");
         if (cwd != null) mPendingTerminalCwd = cwd;
+        // v30: file to run in its own folder's session (tab stays open).
+        String runFile = intent.getStringExtra("nobi_run_file");
+        if (runFile != null) mPendingRunFile = runFile;
         String run = intent.getStringExtra("nobi_run_and_return");
         if (run != null) {
             mPendingRunAndReturn = run;
@@ -954,6 +965,15 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             String cwd = mPendingTerminalCwd;
             mPendingTerminalCwd = null;
             focusOrCreateSessionInCwd(cwd);
+        }
+        if (mPendingRunFile != null) {
+            // v30: delivered HERE, after the cwd focus above — NOT via
+            // nobi_run_command/deliverPendingTerminalInput, which runs
+            // before the cwd is applied and would type into the wrong
+            // session (see BUILD.md M9).
+            String file = mPendingRunFile;
+            mPendingRunFile = null;
+            runFileInTerminal(file);
         }
         if (mPendingRunAndReturn != null) {
             String command = mPendingRunAndReturn;
@@ -2301,6 +2321,87 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         session.write(bytes, 0, bytes.length);
     }
 
+    // ---- v30: cross-over helpers (editor ⇄ terminal ⇄ file manager) ----
+
+    /** Live cwd of the current session (from /proc), else the terminal home. */
+    private String nobiCurrentFolder() {
+        TerminalSession session = getCurrentSession();
+        if (session != null) {
+            String cwd = session.getCwd();
+            if (cwd != null && !cwd.isEmpty()) return cwd;
+        }
+        return TermuxConstants.TERMUX_HOME_DIR_PATH;
+    }
+
+    /** Shell command to run a file by extension, or null (same map as the editor). */
+    static String nobiRunCommandForFile(String path) {
+        if (path == null) return null;
+        String quoted = "'" + path.replace("'", "'\\''") + "'";
+        String lower = path.toLowerCase(java.util.Locale.ROOT);
+        if (lower.endsWith(".sh")) return "bash " + quoted;
+        if (lower.endsWith(".py")) return "python3 " + quoted;
+        if (lower.endsWith(".js")) return "node " + quoted;
+        return null;
+    }
+
+    /**
+     * Run [filePath] in its folder's session: focus the session already in
+     * that folder or open a new one there, then type the run command. The
+     * session stays open afterwards so the output can be read.
+     */
+    private void runFileInTerminal(String filePath) {
+        if (filePath == null || filePath.isEmpty()) return;
+        java.io.File file = new java.io.File(filePath);
+        String parent = file.getParent();
+        if (parent == null || parent.isEmpty()) parent = TermuxConstants.TERMUX_HOME_DIR_PATH;
+        String command = nobiRunCommandForFile(filePath);
+        focusOrCreateSessionInCwd(parent);
+        if (command == null) {
+            showToast(getString(R.string.nobi_run_not_runnable), true);
+            return;
+        }
+        writeToCurrentSession(command, true);
+    }
+
+    /** v30: open the current session's folder in the file manager. */
+    private void openCurrentFolderInFileManager() {
+        Intent fileManagerIntent = new Intent(this,
+                me.zhanghai.android.files.filelist.FileListActivity.class);
+        fileManagerIntent.putExtra("com.nobifile.manager.extra.PATH_URI",
+                "file://" + nobiCurrentFolder());
+        ActivityUtils.startActivity(this, fileManagerIntent);
+    }
+
+    /**
+     * v30: open the selected text as a path in the editor — a file opens
+     * directly, a folder opens as the editor's folder. Relative paths
+     * resolve against the current session's folder.
+     */
+    private void openSelectionInEditor() {
+        String selected = mTerminalView != null ? mTerminalView.getStoredSelectedText() : null;
+        if (selected == null || selected.trim().isEmpty()) {
+            showToast(getString(R.string.nobi_select_file_path), true);
+            return;
+        }
+        String text = selected.trim();
+        int newline = text.indexOf('\n');
+        if (newline >= 0) text = text.substring(0, newline).trim();
+        java.io.File file = new java.io.File(text);
+        if (!file.isAbsolute()) file = new java.io.File(nobiCurrentFolder(), text);
+        if (!file.exists()) {
+            showToast(getString(R.string.nobi_file_not_found, file.getPath()), true);
+            return;
+        }
+        Intent intent = new Intent(this, com.nobicode.editor.MainActivity.class);
+        if (file.isDirectory()) {
+            intent.putExtra("nobi_open_folder", "file://" + file.getAbsolutePath());
+        } else {
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(android.net.Uri.parse("file://" + file.getAbsolutePath()), "*/*");
+        }
+        ActivityUtils.startActivity(this, intent);
+    }
+
     /** Deliver a pending home-shortcut command / shared path, if possible. */
     private void deliverPendingTerminalInput() {
         if (mTermuxService == null) return;
@@ -2986,6 +3087,11 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         menu.add(Menu.NONE, CONTEXT_MENU_SHARE_TRANSCRIPT_ID, Menu.NONE, R.string.action_share_transcript);
         if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText()))
             menu.add(Menu.NONE, CONTEXT_MENU_SHARE_SELECTED_TEXT, Menu.NONE, R.string.action_share_selected_text);
+        // v30: cross-over — current folder to the file manager, selected
+        // path to the editor. Open in Editor needs a selection, like Share.
+        menu.add(Menu.NONE, CONTEXT_MENU_OPEN_IN_FILE_MANAGER_ID, Menu.NONE, R.string.nobi_open_in_file_manager);
+        if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText()))
+            menu.add(Menu.NONE, CONTEXT_MENU_OPEN_IN_EDITOR_ID, Menu.NONE, R.string.nobi_open_in_editor);
         if (autoFillEnabled)
             menu.add(Menu.NONE, CONTEXT_MENU_AUTOFILL_USERNAME, Menu.NONE, R.string.action_autofill_username);
         if (autoFillEnabled)
@@ -3019,6 +3125,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 return true;
             case CONTEXT_MENU_SHARE_SELECTED_TEXT:
                 mTermuxTerminalViewClient.shareSelectedText();
+                return true;
+            case CONTEXT_MENU_OPEN_IN_FILE_MANAGER_ID:
+                openCurrentFolderInFileManager();
+                return true;
+            case CONTEXT_MENU_OPEN_IN_EDITOR_ID:
+                openSelectionInEditor();
                 return true;
             case CONTEXT_MENU_AUTOFILL_USERNAME:
                 mTerminalView.requestAutoFillUsername();

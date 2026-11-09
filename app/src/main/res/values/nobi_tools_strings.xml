@@ -167,4 +167,11 @@
     <string name="nobi_animated_intro_preference_summary">Short animated NOBITA intro on cold start</string>
     <string name="nobi_launcher_icon_preference_title">Launcher icon</string>
     <string name="nobi_launcher_icon_preference_summary">Choose the app icon style</string>
+
+    <!-- v30: cross-over — terminal ⇄ file manager / editor. -->
+    <string name="nobi_open_in_file_manager">Open in File Manager</string>
+    <string name="nobi_open_in_editor">Open in Editor</string>
+    <string name="nobi_select_file_path">Select a file path first</string>
+    <string name="nobi_file_not_found">File not found: %1$s</string>
+    <string name="nobi_run_not_runnable">Only .sh, .py and .js files can run in the terminal</string>
 </resources>

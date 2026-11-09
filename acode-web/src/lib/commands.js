@@ -815,6 +815,48 @@ Additional Info:
 			window.toast("Failed to create terminal");
 		}
 	},
+	// v30: cross-over commands — editor ⇄ terminal. Also reachable from
+	// the tab context menu (via nobicode.exec) and the command palette.
+	async "run-in-terminal"(referenceFile) {
+		try {
+			const { runFileInTerminal } = await import(
+				/* webpackChunkName: "nobi-terminal" */ "lib/nobiTerminal"
+			);
+			const file = resolveReferenceFile(referenceFile);
+			if (file?.uri) return runFileInTerminal(file.uri, file.filename);
+			return runFileInTerminal();
+		} catch (error) {
+			console.error("Failed to run in terminal:", error);
+			window.toast("Could not run in terminal");
+			return false;
+		}
+	},
+	async "send-to-terminal"() {
+		try {
+			const { sendSelectionToTerminal } = await import(
+				/* webpackChunkName: "nobi-terminal" */ "lib/nobiTerminal"
+			);
+			return sendSelectionToTerminal();
+		} catch (error) {
+			console.error("Failed to send to terminal:", error);
+			window.toast("Could not send to terminal");
+			return false;
+		}
+	},
+	async "open-terminal-here"(referenceFile) {
+		try {
+			const { openTerminalHere } = await import(
+				/* webpackChunkName: "nobi-terminal" */ "lib/nobiTerminal"
+			);
+			const file = resolveReferenceFile(referenceFile);
+			if (file?.location) return openTerminalHere(file.location);
+			return openTerminalHere();
+		} catch (error) {
+			console.error("Failed to open terminal here:", error);
+			window.toast("Could not open terminal");
+			return false;
+		}
+	},
 	async "running-processes"() {
 		const { default: RunningProcesses } = await import(
 			"pages/runningProcesses"
