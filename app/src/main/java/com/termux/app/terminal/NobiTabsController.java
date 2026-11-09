@@ -282,15 +282,16 @@ public class NobiTabsController {
         int failedText = dsColor(R.color.nobi_ds_error);
         int verticalPad = dp(compact ? 2 : 4);
         // v27: reference tabs — fully rounded cards (12dp ALL corners),
-        // 1dp outline, terminal icon, restrained blue glow on the active
-        // tab. Active = blue gradient (bright top -> #12345C) + 1dp
-        // #168BFF border + a soft blue halo ring just inside the edge
-        // (outer layer in accent blue at low alpha, inner gradient inset
-        // 2dp). Inactive = dark navy surface + 1dp #26354A border.
-        // 8dp between tabs (4dp margins each side), 44dp tall (2dp
-        // vertical margins in the 48dp strip). Order, persistence,
-        // drag-reorder, rename, notes, colours and running/exited states
-        // are all untouched.
+        // 1dp outline, session number, restrained blue glow on the
+        // active tab. Active = blue gradient (bright top -> #12345C) +
+        // 1dp #168BFF border + a soft blue halo ring just inside the
+        // edge (outer layer in accent blue at low alpha, inner gradient
+        // inset 2dp). Inactive = dark navy surface + 1dp #26354A border.
+        // v31: the ">_" terminal icon is gone — the session NUMBER
+        // (1, 2, 3...) stands in its place. 8dp between tabs (4dp
+        // margins each side), 36dp tall (2dp vertical margins in the
+        // 40dp strip). Order, persistence, drag-reorder, rename, notes,
+        // colours and running/exited states are all untouched.
         android.graphics.drawable.GradientDrawable tabBg =
             new android.graphics.drawable.GradientDrawable();
         android.graphics.drawable.Drawable tabBackground;
@@ -321,12 +322,14 @@ public class NobiTabsController {
         tab.setBackground(tabBackground);
         // v8 sizing: wider tabs (width only — height/verticalPad untouched)
         // so short tabs stop crowding each other and mis-taps drop.
-        tab.setPadding(dp(12), verticalPad, dp(8), verticalPad);
+        // v31: 4dp right padding so the close button sits in the tab's
+        // right corner (was 8dp — the × looked glued inside the tab).
+        tab.setPadding(dp(12), verticalPad, dp(4), verticalPad);
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         // 4dp each side (8dp between tabs), 2dp top/bottom so the tab is
-        // a 44dp floating card in the 48dp strip — not flush like v25/v26.
+        // a 36dp floating card in the 40dp strip — not flush like v25/v26.
         tabParams.setMargins(dp(4), dp(2), dp(4), dp(2));
         tab.setLayoutParams(tabParams);
         tab.setMinimumWidth(dp(88));
@@ -342,15 +345,16 @@ public class NobiTabsController {
             tab.addView(dot);
         }
 
-        // v27: terminal icon before the title, like the reference
-        // ([ >_ | 1 | × ]). Monospace so it reads as a prompt glyph.
-        TextView iconView = new TextView(mActivity);
-        iconView.setText(">_" );
-        iconView.setTextSize(13);
-        iconView.setTypeface(android.graphics.Typeface.MONOSPACE);
-        iconView.setTextColor(activeText);
-        iconView.setPadding(0, 0, dp(6), 0);
-        tab.addView(iconView);
+        // v31: session NUMBER before the title (1, 2, 3...) — the ">_"
+        // terminal icon is gone. Bold, monospace, accent on the active
+        // tab so the number reads at a glance.
+        TextView numberView = new TextView(mActivity);
+        numberView.setText(String.valueOf(displayIndex + 1));
+        numberView.setTextSize(13);
+        numberView.setTypeface(android.graphics.Typeface.MONOSPACE, android.graphics.Typeface.BOLD);
+        numberView.setTextColor(isActive ? dsColor(R.color.nobi_ds_accent) : activeText);
+        numberView.setPadding(0, 0, dp(6), 0);
+        tab.addView(numberView);
 
         TextView titleView = new TextView(mActivity);
         titleView.setText(resolveTabLabel(session, displayIndex));
@@ -373,13 +377,25 @@ public class NobiTabsController {
         }
         tab.addView(titleView);
 
+        // v31: close button pinned to the tab's RIGHT corner — 28dp
+        // square tap target, 18sp ×, no side padding (the tab's own
+        // 4dp end padding is the corner gap). Before this the × was a
+        // 15sp glyph with 8dp padding, glued inside the tab.
         TextView closeView = new TextView(mActivity);
         closeView.setText("×");
-        closeView.setTextSize(15);
+        closeView.setTextSize(18);
         closeView.setGravity(Gravity.CENTER);
         closeView.setTextColor(activeText);
         closeView.setContentDescription("Close session");
-        closeView.setPadding(dp(8), 0, dp(8), 0);
+        closeView.setPadding(0, 0, 0, 0);
+        closeView.setMinWidth(dp(28));
+        closeView.setMinimumWidth(dp(28));
+        closeView.setMinHeight(dp(28));
+        closeView.setMinimumHeight(dp(28));
+        LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(
+            dp(28), dp(28));
+        closeParams.setMargins(dp(4), 0, 0, 0);
+        closeView.setLayoutParams(closeParams);
         closeView.setOnClickListener(v -> closeSession(session));
         tab.addView(closeView);
 

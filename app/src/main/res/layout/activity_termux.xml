@@ -9,10 +9,14 @@
 
     <!-- v26: the 56dp toolbar WITH heading is back (spec Phase 2 +
          reference screenshot) — this supersedes v25's heading removal
-         (the tab strip was the top bar in v25 only). Hamburger opens the
-         drawer, the mark + "NobiTerm / Linux Terminal" is the heading,
-         and search / settings / overflow are wired in setupNobiToolbar().
-         The tabs bar sits directly below it. -->
+         (the tab strip was the top bar in v25 only). Hamburger toggles
+         the drawer, the mark + "Nobi Terminal / Linux Terminal" is the
+         heading, and search / settings / overflow are wired in
+         setupNobiToolbar(). v31: the logo is the APP icon (the N mark,
+         ic_nobi_toolbar_app_icon) — not the ">_" terminal glyph — and
+         the title block is flush left: content insets 0 so the mark +
+         title start right after the hamburger, flush with the drawer
+         edge below. The tabs bar sits directly below it. -->
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/nobi_toolbar"
@@ -20,7 +24,10 @@
         android:layout_height="@dimen/nobi_ds_toolbar_height"
         android:background="@color/nobi_ds_toolbar_bg"
         app:navigationIcon="@drawable/ic_nobi_menu"
-        app:logo="@drawable/ic_nobi_toolbar_mark"
+        app:logo="@drawable/ic_nobi_toolbar_app_icon"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:titleMarginStart="8dp"
         app:title="@string/nobi_toolbar_title"
         app:subtitle="@string/nobi_toolbar_subtitle"
         app:titleTextAppearance="@style/NobiDsToolbarTitle"
@@ -28,68 +35,75 @@
         app:titleTextColor="@color/nobi_ds_text_primary"
         app:subtitleTextColor="@color/nobi_ds_text_secondary" />
 
-    <LinearLayout
-        android:id="@+id/nobi_tabs_bar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/nobi_ds_tabs_bar_height"
-        android:orientation="horizontal"
-        android:background="@color/nobi_ds_app_bg">
+    <!-- v31: the DrawerLayout now wraps the tabs bar + note + terminal
+         content (not just the terminal). The drawer slides OVER the tab
+         strip — tabs are hidden behind the drawer while it is open —
+         and its top edge sits flush under the toolbar (header se sata
+         hua). The extra-keys ViewPager stays OUTSIDE the DrawerLayout,
+         below it, so the drawer ALWAYS ends above the extra-keys bar
+         and the whole drawer (APPLICATION section included) is visible.
+         The restructure also gives the drawer ~48dp more height (the
+         tabs strip is inside it now), which is what lets the full menu
+         fit (see the 44dp drawer rows, v31). -->
 
-        <HorizontalScrollView
-            android:id="@+id/nobi_tabs_scroll_view"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/nobi_tabs_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal" />
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/nobi_tab_add"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="+"
-            android:textSize="20sp"
-            android:textColor="@color/nobi_ds_accent"
-            android:contentDescription="New session" />
-    </LinearLayout>
-
-    <!-- v6 (9): active session's note, shown under the tabs bar when set. -->
-    <TextView
-        android:id="@+id/nobi_tab_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="4dp"
-        android:background="@color/nobi_ds_app_bg"
-        android:textColor="@color/nobi_ds_text_secondary"
-        android:textSize="12sp"
-        android:maxLines="1"
-        android:ellipsize="end" />
-
-    <RelativeLayout
-        android:id="@+id/activity_termux_root_relative_layout"
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginVertical="0dp"
-        android:orientation="vertical">
+        android:layout_weight="1">
 
-        <androidx.drawerlayout.widget.DrawerLayout
-            android:id="@+id/drawer_layout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_above="@+id/terminal_toolbar_view_pager"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/nobi_tabs_bar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/nobi_ds_tabs_bar_height"
+                android:orientation="horizontal"
+                android:background="@color/nobi_ds_app_bg">
+
+                <HorizontalScrollView
+                    android:id="@+id/nobi_tabs_scroll_view"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/nobi_tabs_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/nobi_tab_add"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textSize="20sp"
+                    android:textColor="@color/nobi_ds_accent"
+                    android:contentDescription="New session" />
+            </LinearLayout>
+
+            <!-- v6 (9): active session's note, shown under the tabs bar when set. -->
+            <TextView
+                android:id="@+id/nobi_tab_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="4dp"
+                android:background="@color/nobi_ds_app_bg"
+                android:textColor="@color/nobi_ds_text_secondary"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
             <!-- v27: terminal workspace — one continuous surface. The
                  wallpaper lives on an ImageView BEHIND the TerminalView
@@ -115,7 +129,8 @@
             <FrameLayout
                 android:id="@+id/terminal_view_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:background="@drawable/nobi_terminal_card"
                 android:clipToOutline="true">
 
@@ -141,433 +156,437 @@
                     tools:ignore="UnusedAttribute" />
             </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/left_drawer"
-                android:layout_width="@dimen/nobi_ds_drawer_width"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:choiceMode="singleChoice"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="0dp"
-                android:descendantFocusability="blocksDescendants"
-                android:orientation="vertical"
-                android:background="@drawable/nobi_drawer_background">
+        </LinearLayout>
 
-                <!-- v25: drawer scrolls — header + menu live inside a
-                     ScrollView (weight 1), so no menu row is ever clipped
-                     on short screens. The sessions ListView below scrolls
-                     by itself; the bottom buttons stay pinned. -->
-                <ScrollView
-                    android:id="@+id/nobi_drawer_scroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:scrollbars="none"
-                    android:fillViewport="true">
+        <LinearLayout
+            android:id="@+id/left_drawer"
+            android:layout_width="@dimen/nobi_ds_drawer_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="vertical"
+            android:background="@drawable/nobi_drawer_background">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+            <!-- v25: drawer scrolls — header + menu live inside a
+                 ScrollView (weight 1), so no menu row is ever clipped
+                 on short screens. The sessions ListView below scrolls
+                 by itself; the bottom buttons stay pinned. -->
+            <ScrollView
+                android:id="@+id/nobi_drawer_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                android:fillViewport="true">
 
-                <!-- v24 w49: compact M3 drawer header (spec 3): icon +
-                     app name + "Developer workspace" + real version.
-                     Replaces the v5 settings-gear row (gone since v5,
-                     still wired — the wiring is removed in code).
-                     Icon is ic_foreground (transparent N mark), NOT
-                     nobi_app_icon (that vector has a baked bg rect). -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp">
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_foreground" />
+            <!-- v24 w49: compact M3 drawer header (spec 3): icon +
+                 app name + "Developer workspace" + real version.
+                 Replaces the v5 settings-gear row (gone since v5,
+                 still wired — the wiring is removed in code).
+                 Icon is ic_foreground (transparent N mark), NOT
+                 nobi_app_icon (that vector has a baked bg rect). -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_foreground" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/nobi_toolbar_title"
-                            android:textColor="@color/nobi_ds_drawer_text"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/nobi_drawer_subtitle"
-                            android:textColor="@color/nobi_ds_drawer_text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/nobi_drawer_version"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/nobi_toolbar_title"
+                        android:textColor="@color/nobi_ds_drawer_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nobi_drawer_subtitle"
                         android:textColor="@color/nobi_ds_drawer_text_secondary"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/nobi_drawer_menu"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/nobi_drawer_version"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingTop="0dp">
+                    android:textColor="@color/nobi_ds_drawer_text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_new_session"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_new_session"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_new_session"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_new_window"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_new_window"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_new_window"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_nobicode"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_code"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_nobicode"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <!-- v29: File Manager (NobiFile) — right after Code Editor. -->
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_nobifile"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_folder"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_nobifile"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-
-                    <!-- v6 batch 1-16: terminal tools. -->
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_quick_commands"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_terminal"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_quick_commands"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_find"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_search"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_find"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_server"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_server"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_server"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_session_tools"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_tools"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_session_tools"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <!-- v7 (58): terminal output → editor. -->
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_output_editor"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_terminal"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_output_editor"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_permissions"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/nobi_ic_shield"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_permissions"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_settings"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_settings"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_settings"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/nobi_menu_exit"
-                        style="@style/NobiDsDrawerRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_nobi_exit"
-                            app:tint="@color/nobi_cyan" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/nobi_menu_exit"
-                            android:textColor="?attr/termuxActivityDrawerImageTint"
-                            android:textSize="15sp" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                    </LinearLayout>
-                </ScrollView>
-
-                <ListView
-                    android:id="@+id/terminal_sessions_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="top"
-                    android:layout_weight="1"
-                    android:choiceMode="none"
-                    android:longClickable="true" />
+            <LinearLayout
+                android:id="@+id/nobi_drawer_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="0dp">
 
                 <LinearLayout
-                    android:id="@+id/drawer_buttons"
-                    style="?android:attr/buttonBarStyle"
+                    android:id="@+id/nobi_menu_new_session"
+                    style="@style/NobiDsDrawerRow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/toggle_keyboard_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/action_toggle_soft_keyboard" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_new_session"
+                        app:tint="@color/nobi_cyan" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/new_session_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/action_new_session" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/new_window_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:visibility="gone"
-                        android:text="@string/action_new_window" />
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_new_session"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/nobi_menu_new_window"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_new_window"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_new_window"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_nobicode"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_code"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_nobicode"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- v29: File Manager (NobiFile) — right after Code Editor. -->
+                <LinearLayout
+                    android:id="@+id/nobi_menu_nobifile"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_folder"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_nobifile"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+
+                <!-- v6 batch 1-16: terminal tools. -->
+                <LinearLayout
+                    android:id="@+id/nobi_menu_quick_commands"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_terminal"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_quick_commands"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_find"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_search"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_find"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_server"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_server"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_server"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_session_tools"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_tools"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_session_tools"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- v7 (58): terminal output → editor. -->
+                <LinearLayout
+                    android:id="@+id/nobi_menu_output_editor"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_terminal"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_output_editor"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_permissions"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/nobi_ic_shield"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_permissions"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_settings"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_settings"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_settings"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/nobi_menu_exit"
+                    style="@style/NobiDsDrawerRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nobi_exit"
+                        app:tint="@color/nobi_cyan" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/nobi_menu_exit"
+                        android:textColor="?attr/termuxActivityDrawerImageTint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
             </LinearLayout>
 
-        </androidx.drawerlayout.widget.DrawerLayout>
+                </LinearLayout>
+            </ScrollView>
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/terminal_toolbar_view_pager"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/nobi_ds_extra_key_row_height"
-            android:background="@color/nobi_ds_terminal_bg"
-            android:layout_alignParentBottom="true" />
+            <ListView
+                android:id="@+id/terminal_sessions_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="top"
+                android:layout_weight="1"
+                android:choiceMode="none"
+                android:longClickable="true" />
 
-    </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/drawer_buttons"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toggle_keyboard_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_toggle_soft_keyboard" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/new_session_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_new_session" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/new_window_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:text="@string/action_new_window" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+    <!-- v31: the extra-keys ViewPager lives OUTSIDE the DrawerLayout,
+         directly under it — the drawer always ends above the extra keys,
+         never behind them. Height is set at runtime by
+         setTerminalToolbarHeight() (row height x number of rows); the
+         XML height is only the initial value. -->
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/terminal_toolbar_view_pager"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nobi_ds_extra_key_row_height"
+        android:background="@color/nobi_ds_terminal_bg" />
 
     <!-- v7 (81): optional bottom navigation bar (drawer alternative). -->
     <LinearLayout

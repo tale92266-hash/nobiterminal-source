@@ -68,7 +68,7 @@ wc-page.main-settings-page {
 		width: 100%;
 		min-height: 64px;
 		margin: 0;
-		padding: 0.75rem 1rem;
+		padding: 0.85rem 1rem;
 		box-sizing: border-box;
 		align-items: center;
 		background: transparent;
@@ -106,12 +106,15 @@ wc-page.main-settings-page {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 1.6rem;
-			min-width: 1.6rem;
-			height: 1.6rem;
-			font-size: 1.3rem;
-			color: var(--secondary-text-color);
-			color: color-mix(in srgb, var(--secondary-text-color), transparent 18%);
+			flex: none;
+			width: 40px;
+			min-width: 40px;
+			height: 40px;
+			border-radius: 12px;
+			font-size: 1.35rem;
+			color: #168BFF;
+			background: rgba(22, 139, 255, 0.12);
+			background: color-mix(in srgb, #168BFF 12%, transparent);
 		}
 
 		&[data-key="appIcon"] > .icon > img[src$="/ic_nobicode_default.svg"] {
@@ -462,12 +465,15 @@ wc-page.detail-settings-page {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 1.4rem;
-			min-width: 1.4rem;
-			height: 1.4rem;
-			font-size: 1.15rem;
-			color: var(--secondary-text-color);
-			color: color-mix(in srgb, var(--secondary-text-color), transparent 18%);
+			flex: none;
+			width: 40px;
+			min-width: 40px;
+			height: 40px;
+			border-radius: 12px;
+			font-size: 1.3rem;
+			color: #168BFF;
+			background: rgba(22, 139, 255, 0.12);
+			background: color-mix(in srgb, #168BFF 12%, transparent);
 		}
 
 		>.container {
@@ -816,11 +822,15 @@ wc-page.detail-settings-page.formatter-settings-page {
 		}
 
 		>.icon:first-child:not(.no-icon) {
-			width: 1.1rem;
-			min-width: 1.1rem;
-			height: 1.1rem;
+			width: 36px;
+			min-width: 36px;
+			height: 36px;
 			margin-right: 0.7rem;
-			font-size: 1rem;
+			border-radius: 10px;
+			font-size: 1.15rem;
+			color: #168BFF;
+			background: rgba(22, 139, 255, 0.12);
+			background: color-mix(in srgb, #168BFF 12%, transparent);
 		}
 
 		>.container {
@@ -896,6 +906,38 @@ wc-page.detail-settings-page.formatter-settings-page {
 
 		.settings-section-label {
 			color: var(--active-color) !important;
+		}
+	}
+}
+
+/* v31 Nobi settings header (item 12) — bigger, distinct header scoped to
+ * every settings page via its #settings id (set in settingsPage.js), so
+ * all other pages keep the stock 45px header. The title is larger and
+ * bolder, the bar is taller, and a Nobi-blue accent strip runs along the
+ * bottom edge. No text, order or behaviour changes here.
+ * NOTE: the header element is <header class="tile"> (tile component) —
+ * it has NO "header" class, so the selector must be "header.tile"
+ * (tag + class), not ".header.tile". */
+#settings {
+	> header.tile {
+		position: relative;
+		height: 64px;
+		padding: 0 0.5rem;
+
+		> .text {
+			font-size: 1.5em;
+			font-weight: 800;
+			letter-spacing: 0.01em;
+		}
+
+		&::after {
+			content: "";
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 4px;
+			background: #168BFF;
 		}
 	}
 }

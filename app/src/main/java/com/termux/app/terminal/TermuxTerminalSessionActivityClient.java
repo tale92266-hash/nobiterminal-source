@@ -335,13 +335,12 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
         mActivity.applyNobiTabFont(session);
     }
 
+    // v31: NO toast (no popup of any kind) on session switch — Sam's
+    // order. Every tab tap used to flash a toast with the session
+    // title (notifyOfSessionChange), which interrupted tab switching.
+    // The method is kept (setCurrentSession calls it) but does nothing;
+    // the "session change toasts" property is now unused.
     void notifyOfSessionChange() {
-        if (!mActivity.isVisible()) return;
-
-        if (!mActivity.getProperties().areTerminalSessionChangeToastsDisabled()) {
-            TerminalSession session = mActivity.getCurrentSession();
-            mActivity.showToast(toToastTitle(session), false);
-        }
     }
 
     public void switchToSession(boolean forward) {

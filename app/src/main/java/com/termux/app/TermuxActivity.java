@@ -30,7 +30,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.termux.R;
@@ -648,10 +647,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     }
 
     private void setMargins() {
-        RelativeLayout relativeLayout = findViewById(R.id.activity_termux_root_relative_layout);
+        // v31: the root RelativeLayout is gone (activity_termux.xml
+        // restructure — the DrawerLayout is a direct child of the root
+        // now). Margins land on the DrawerLayout, which holds the same
+        // visual region (tabs + terminal) as the old RelativeLayout did.
+        androidx.drawerlayout.widget.DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         int marginHorizontal = mProperties.getTerminalMarginHorizontal();
         int marginVertical = mProperties.getTerminalMarginVertical();
-        ViewUtils.setLayoutMarginsInDp(relativeLayout, marginHorizontal, marginVertical, marginHorizontal, marginVertical);
+        ViewUtils.setLayoutMarginsInDp(drawerLayout, marginHorizontal, marginVertical, marginHorizontal, marginVertical);
     }
 
     /**
@@ -1878,8 +1881,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     // ---- v26: 56dp toolbar WITH heading is back (spec Phase 2) — this
     // supersedes v25, where the tab strip was the top bar and the
-    // toolbar was deleted. Nav icon opens the drawer (as in v24);
-    // title/subtitle are the static "NobiTerm / Linux Terminal" from
+    // toolbar was deleted. Nav icon toggles the drawer (v31: open on
+    // first click, close on the next — it only opened before);
+    // title/subtitle are the static "Nobi Terminal / Linux Terminal" from
     // the layout. Every action wires to its EXISTING implementation —
     // no decorative icons:
     //   search   -> NobiTerminalSearch (same call as the drawer Find row)
@@ -1890,8 +1894,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             findViewById(R.id.nobi_toolbar);
         if (toolbar == null) return;
         toolbar.setNavigationOnClickListener(v -> {
-            if (getDrawer() != null)
-                getDrawer().openDrawer(android.view.Gravity.LEFT);
+            androidx.drawerlayout.widget.DrawerLayout drawer = getDrawer();
+            if (drawer == null) return;
+            // v31: hamburger toggles — open on first click, close on the
+            // next (it only opened before; closing needed an outside tap).
+            if (drawer.isDrawerOpen(android.view.Gravity.LEFT))
+                drawer.closeDrawer(android.view.Gravity.LEFT);
+            else
+                drawer.openDrawer(android.view.Gravity.LEFT);
         });
         toolbar.inflateMenu(R.menu.nobi_toolbar_menu);
         toolbar.setOnMenuItemClickListener(item -> {
@@ -2044,8 +2054,11 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             label.setText(group[0]);
             label.setTextAppearance(this, R.style.NobiDsDrawerSectionLabel);
             int p16 = getResources().getDimensionPixelSize(R.dimen.nobi_ds_spacing_16);
+            // v31: tighter section labels (8dp top / 4dp bottom instead of
+            // 16dp / 8dp) so the whole menu fits in the drawer height.
             int p8 = getResources().getDimensionPixelSize(R.dimen.nobi_ds_spacing_8);
-            label.setPadding(p16, p16, p16, p8);
+            int p4 = getResources().getDimensionPixelSize(R.dimen.nobi_ds_spacing_4);
+            label.setPadding(p16, p8, p16, p4);
             label.setTag(Integer.valueOf(0x4E4F4249)); // "NOBI" marker
             menu.addView(label, firstVisible);
         }
@@ -2057,7 +2070,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         android.widget.LinearLayout menu = findViewById(R.id.nobi_drawer_menu);
         if (menu == null) return;
         boolean compact = "compact".equals(nobiDensity());
-        int vertical = (int) ((compact ? 8 : 13) * getResources().getDisplayMetrics().density);
+        // v31: tighter row padding (comfortable 10dp, compact 6dp — was
+        // 13dp / 8dp) so the whole menu fits in the drawer height; the
+        // APPLICATION section was cut off behind the extra-keys bar.
+        int vertical = (int) ((compact ? 6 : 10) * getResources().getDisplayMetrics().density);
         for (int i = 0; i < menu.getChildCount(); i++) {
             View row = menu.getChildAt(i);
             if (row.getTag() instanceof Integer) continue; // v24 w49: section label, not a row

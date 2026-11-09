@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v31: toolbar app icon — the NobiTerminal "N" launcher mark
+     (ic_foreground) at 40dp, for the MaterialToolbar logo. The old
+     logo (ic_nobi_toolbar_mark) was a ">_" terminal glyph; the header
+     mark is the app mark now. Same paths/viewport as ic_foreground,
+     only the size changes (vectors scale). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="40dp"
+    android:width="40dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:translateX="3"
+        android:translateY="3">
+        <path
+            android:fillColor="#8B5CF6"
+            android:pathData="M30,78 L30,30 L40,30 L66,62 L66,30 L78,30 L78,78 L68,78 L42,46 L42,78 Z"
+            />
+    </group>
+
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M30,78 L30,30 L40,30 L66,62 L66,30 L78,30 L78,78 L68,78 L42,46 L42,78 Z"
+        />
+
+</vector>

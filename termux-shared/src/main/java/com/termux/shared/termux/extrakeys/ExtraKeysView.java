@@ -28,6 +28,9 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.PopupWindow;
 
+import androidx.core.widget.TextViewCompat;
+import android.util.TypedValue;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -461,6 +464,18 @@ public final class ExtraKeysView extends GridLayout {
 
                 button.setText(buttonInfo.getDisplay());
                 button.setTextColor(mButtonTextColor);
+                // v31: label is ALWAYS one line, never wrapped or cut —
+                // "HOME" wrapped to "HOM/E" and "PGDN" was clipped in v30.
+                // Single line + autosize (14sp down to 8sp in 1sp steps):
+                // a long label shrinks to fit instead of wrapping or
+                // clipping. Applied to every key incl. special buttons
+                // (the same setText path serves them) and to the popup
+                // button in showPopup().
+                button.setSingleLine(true);
+                button.setMaxLines(1);
+                button.setEllipsize(null);
+                TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(button,
+                    8, 14, 1, TypedValue.COMPLEX_UNIT_SP);
                 // v15: resting background was never set (buttons started
                 // v15: transparent, showing the bar behind them) — set it explicitly.
                 button.setBackground(nobiKeyBackground(mButtonBackgroundColor));
@@ -659,6 +674,11 @@ public final class ExtraKeysView extends GridLayout {
         }
         button.setText(extraButton.getDisplay());
         button.setAllCaps(mButtonTextAllCaps);
+        button.setSingleLine(true);
+        button.setMaxLines(1);
+        button.setEllipsize(null);
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(button,
+            8, 14, 1, TypedValue.COMPLEX_UNIT_SP);
         button.setPadding(0, 0, 0, 0);
         button.setMinHeight(0);
         button.setMinWidth(0);

@@ -17,12 +17,16 @@
     <!-- v26: toolbar is back (spec Phase 2) — 56dp, heading + actions. -->
     <dimen name="nobi_ds_toolbar_height">56dp</dimen>
     <dimen name="nobi_ds_toolbar_icon_size">24dp</dimen>
-    <!-- Session tabs bar (v25: the strip IS the top bar, Chrome height). -->
-    <dimen name="nobi_ds_tabs_bar_height">48dp</dimen>
+    <!-- Session tabs bar (v25: the strip IS the top bar, Chrome height).
+         v31: 40dp — shorter tabs, tab card is 36dp (2dp margins). -->
+    <dimen name="nobi_ds_tabs_bar_height">40dp</dimen>
     <dimen name="nobi_ds_tab_corner">8dp</dimen>
     <!-- Navigation drawer (spec 3). -->
     <dimen name="nobi_ds_drawer_width">304dp</dimen>
-    <dimen name="nobi_ds_drawer_item_height">54dp</dimen>
+    <!-- v31: 44dp rows so the whole drawer menu (12 rows + 3 labels +
+         header) fits in the drawer height — the APPLICATION section was
+         cut off behind the extra-keys bar in v30. -->
+    <dimen name="nobi_ds_drawer_item_height">44dp</dimen>
     <dimen name="nobi_ds_drawer_icon_size">24dp</dimen>
     <dimen name="nobi_ds_drawer_icon_text_gap">16dp</dimen>
     <dimen name="nobi_ds_drawer_corner">24dp</dimen>

@@ -16,9 +16,10 @@
     <string name="nobi_menu_find">Find in Terminal</string>
     <string name="nobi_menu_server">Start Server</string>
     <string name="nobi_menu_session_tools">Session Tools</string>
-    <!-- v26: toolbar heading + menu titles (spec Phase 2). The title is
-         "NobiTerm" (the reference wordmark), not the app name. -->
-    <string name="nobi_toolbar_title">NobiTerm</string>
+    <!-- v26: toolbar heading + menu titles (spec Phase 2).
+         v31: title is "Nobi Terminal" (the app name) — "NobiTerm" is
+         gone everywhere user-visible. -->
+    <string name="nobi_toolbar_title">Nobi Terminal</string>
     <string name="nobi_toolbar_subtitle">Linux Terminal</string>
     <string name="nobi_toolbar_search">Search</string>
     <string name="nobi_toolbar_settings">Settings</string>
