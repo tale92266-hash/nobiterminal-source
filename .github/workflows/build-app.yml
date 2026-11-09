@@ -131,7 +131,7 @@ jobs:
       # paid com.nobicode.editor) — no cordova CLI, no network. JDK stays
       # 17: the www build is pure Node.
       - name: Set up Node LTS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: lts/*
           cache: npm
