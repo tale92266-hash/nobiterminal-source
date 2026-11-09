@@ -416,6 +416,27 @@ public final class NobiTerminalUtils {
     }
 
     /**
+     * v31.2: true if the saved extra-keys value contains exactly the same
+     * key set as the built-in default (same keys, any order, duplicates
+     * allowed — parseExtraKeysValue collapses duplicates and counts a
+     * popup key as a key, so the default's {key: '-', popup: '|'} counts
+     * both '-' and '|'). A stale saved matrix — e.g. the 2x8 bar on Sam's
+     * phone with a duplicate '-' and a standalone '|' left over from an
+     * old settings save — is a permutation of the default; resetting it
+     * to the default loses NO key (set equality is proven here) and
+     * restores the reference 2x7 bar. A customized set (different keys)
+     * returns false and is left untouched.
+     */
+    public static boolean isStaleExtraKeysPermutation(@Nullable String value) {
+        if (value == null) return false;
+        Set<String> saved = parseExtraKeysValue(value);
+        Set<String> def = parseExtraKeysValue(TermuxPropertyConstants.DEFAULT_IVALUE_EXTRA_KEYS);
+        saved.removeIf(NobiTerminalUtils::isRemovedExtraKey);
+        def.removeIf(NobiTerminalUtils::isRemovedExtraKey);
+        return !saved.isEmpty() && saved.equals(def);
+    }
+
+    /**
      * The set of keys the extra keys bar currently shows: the extra-keys
      * property of ~/.termux/termux.properties if set, otherwise the keys of
      * the built-in default value.

@@ -6,4 +6,6 @@
     <attr name="extraKeysButtonActiveBackgroundColor" format="reference" />
     <!-- v24 w50: keycap outline colour (spec 4), resolved from the app theme. -->
     <attr name="extraKeysButtonOutlineColor" format="reference" />
+    <!-- v31.2: solid strip behind the extra keys, resolved from the app theme. -->
+    <attr name="extraKeysBarBackgroundColor" format="reference" />
 </resources>

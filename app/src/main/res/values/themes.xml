@@ -128,6 +128,8 @@
         <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_keycap_bg</item>
         <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_ds_selected</item>
         <item name="extraKeysButtonOutlineColor">@color/nobi_ds_keycap_outline</item>
+        <!-- v31.2: solid strip behind the extra keys. -->
+        <item name="extraKeysBarBackgroundColor">@color/nobi_ds_extra_keys_bar_bg</item>
 
         <!-- v24 w47: surface roles for dialogs/menus (mode-resolved). -->
         <item name="colorSurface">@color/nobi_ds_surface</item>

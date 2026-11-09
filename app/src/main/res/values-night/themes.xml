@@ -43,6 +43,8 @@
         <item name="extraKeysButtonBackgroundColor">@color/nobi_ds_keycap_bg</item>
         <item name="extraKeysButtonActiveBackgroundColor">@color/nobi_ds_selected</item>
         <item name="extraKeysButtonOutlineColor">@color/nobi_ds_keycap_outline</item>
+        <!-- v31.2: solid strip behind the extra keys. -->
+        <item name="extraKeysBarBackgroundColor">@color/nobi_ds_extra_keys_bar_bg</item>
     </style>
 
     <!-- v21 w31: night twin of Theme.NobiSettings.DayNight. A style defined in

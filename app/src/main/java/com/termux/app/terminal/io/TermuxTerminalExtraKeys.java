@@ -68,6 +68,21 @@ public class TermuxTerminalExtraKeys extends TerminalExtraKeys {
             // toggle button still reaches the same handler.
             if (extrakeys != null)
                 extrakeys = NobiTerminalUtils.sanitizeExtraKeysValue(extrakeys);
+            // v31.2: a stale saved matrix that is only a permutation of
+            // the built-in default (same key set — e.g. the 2x8 bar with
+            // a duplicate '-' and a standalone '|' from an old settings
+            // save) overrides the default at load time and can never
+            // show the reference 2x7 bar. Drop the saved line (exactly
+            // what the settings "Default" preset does) so the built-in
+            // default applies; no key is lost — set equality is proven
+            // inside isStaleExtraKeysPermutation. A customized set is
+            // left untouched. The write runs once: after the line is
+            // gone the next load sees null and skips this branch.
+            if (extrakeys != null && NobiTerminalUtils.isStaleExtraKeysPermutation(extrakeys)) {
+                Logger.logInfo(LOG_TAG, "Dropping stale extra-keys value (permutation of default) so the reference bar applies.");
+                NobiTerminalUtils.setExtraKeysValue(null);
+                extrakeys = null;
+            }
             if (extrakeys == null)
                 extrakeys = TermuxPropertyConstants.DEFAULT_IVALUE_EXTRA_KEYS;
             String extraKeysStyle = (String) mActivity.getProperties().getInternalPropertyValue(TermuxPropertyConstants.KEY_EXTRA_KEYS_STYLE, true);

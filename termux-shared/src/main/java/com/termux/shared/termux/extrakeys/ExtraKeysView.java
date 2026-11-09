@@ -122,6 +122,8 @@ public final class ExtraKeysView extends GridLayout {
     public static final int ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR = R.attr.extraKeysButtonActiveBackgroundColor;
     /** Defines the default value for {@link #mButtonOutlineColor} defined by current theme. */
     public static final int ATTR_BUTTON_OUTLINE_COLOR = R.attr.extraKeysButtonOutlineColor;
+    /** Defines the default value for {@link #mBarBackgroundColor} defined by current theme. */
+    public static final int ATTR_BAR_BACKGROUND_COLOR = R.attr.extraKeysBarBackgroundColor;
 
     /** Defines the default fallback value for {@link #mButtonTextColor} if {@link #ATTR_BUTTON_TEXT_COLOR} is undefined. */
     public static final int DEFAULT_BUTTON_TEXT_COLOR = 0xFFFFFFFF;
@@ -133,6 +135,8 @@ public final class ExtraKeysView extends GridLayout {
     public static final int DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR = 0xFF7F7F7F;
     /** Defines the default fallback value for {@link #mButtonOutlineColor} if {@link #ATTR_BUTTON_OUTLINE_COLOR} is undefined. */
     public static final int DEFAULT_BUTTON_OUTLINE_COLOR = 0xFF263449;
+    /** Defines the default fallback value for {@link #mBarBackgroundColor} if {@link #ATTR_BAR_BACKGROUND_COLOR} is undefined. */
+    public static final int DEFAULT_BAR_BACKGROUND_COLOR = 0xFF070B18;
 
 
 
@@ -186,6 +190,9 @@ public final class ExtraKeysView extends GridLayout {
     /** The outline color for the extra keys keycap. Defaults to
      * {@link #DEFAULT_BUTTON_OUTLINE_COLOR}. */
     protected int mButtonOutlineColor;
+    /** The background color of the whole extra keys bar strip. Defaults to
+     * {@link #DEFAULT_BAR_BACKGROUND_COLOR}. */
+    protected int mBarBackgroundColor;
 
     /** Defines whether text for the extra keys button should be all capitalized automatically. */
     protected boolean mButtonTextAllCaps = true;
@@ -232,6 +239,8 @@ public final class ExtraKeysView extends GridLayout {
             ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR, DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR));
         setButtonOutlineColor(
             ThemeUtils.getSystemAttrColor(context, ATTR_BUTTON_OUTLINE_COLOR, DEFAULT_BUTTON_OUTLINE_COLOR));
+        mBarBackgroundColor = ThemeUtils.getSystemAttrColor(context,
+            ATTR_BAR_BACKGROUND_COLOR, DEFAULT_BAR_BACKGROUND_COLOR);
 
         setLongPressTimeout(ViewConfiguration.getLongPressTimeout());
         setLongPressRepeatDelay(DEFAULT_LONG_PRESS_REPEAT_DELAY);
@@ -300,21 +309,49 @@ public final class ExtraKeysView extends GridLayout {
         mButtonOutlineColor = buttonOutlineColor;
     }
 
+    /** Get {@link #mBarBackgroundColor}. */
+    public int getBarBackgroundColor() {
+        return mBarBackgroundColor;
+    }
+
+    /** Set {@link #mBarBackgroundColor}. */
+    public void setBarBackgroundColor(int barBackgroundColor) {
+        mBarBackgroundColor = barBackgroundColor;
+    }
+
     /**
      * v24 w50: keycap background (spec 4) — 8dp rounded corners, 1dp
      * outline, flat fill. Replaces the flat setBackgroundColor() so
      * keys read as caps instead of text on the bar. All dispatch,
      * repeat, popup and modifier behaviour is untouched; only the
      * background drawable changes.
+     * v31.2: premium reference look — vertical gradient (top stop
+     * lightened 12% over the fill, bottom stop the fill itself),
+     * 10dp rounded corners, 1dp soft blue-grey outline. Same method
+     * serves the resting fill and the pressed fill (via
+     * nobiSetKeyBackground), so both states get the gradient.
      */
     protected android.graphics.drawable.GradientDrawable nobiKeyBackground(int fillColor) {
         android.graphics.drawable.GradientDrawable bg =
             new android.graphics.drawable.GradientDrawable();
         bg.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
-        bg.setCornerRadius(8 * getResources().getDisplayMetrics().density);
-        bg.setColor(fillColor);
+        bg.setOrientation(android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM);
+        bg.setColors(new int[]{nobiLightenColor(fillColor, 0.12f), fillColor});
+        bg.setCornerRadius(10 * getResources().getDisplayMetrics().density);
         bg.setStroke((int) (1 * getResources().getDisplayMetrics().density + 0.5f), mButtonOutlineColor);
         return bg;
+    }
+
+    /** Lighten a colour toward white by {@code fraction} (0..1) — the top stop of the keycap gradient. */
+    protected static int nobiLightenColor(int color, float fraction) {
+        int a = android.graphics.Color.alpha(color);
+        int r = android.graphics.Color.red(color);
+        int g = android.graphics.Color.green(color);
+        int b = android.graphics.Color.blue(color);
+        r += (int) ((255 - r) * fraction + 0.5f);
+        g += (int) ((255 - g) * fraction + 0.5f);
+        b += (int) ((255 - b) * fraction + 0.5f);
+        return android.graphics.Color.argb(a, r, g, b);
     }
 
     /** Apply a keycap background to a key view (resting or pressed fill). */
@@ -438,6 +475,10 @@ public final class ExtraKeysView extends GridLayout {
 
         removeAllViews();
 
+        // v31.2: solid dark strip behind the keys, exactly like the
+        // reference — no wallpaper bleeding through the gaps.
+        setBackgroundColor(mBarBackgroundColor);
+
         ExtraKeyButton[][] buttons = extraKeysInfo.getMatrix();
 
         setRowCount(buttons.length);
@@ -492,6 +533,12 @@ public final class ExtraKeysView extends GridLayout {
                 // must not touch the key borders.
                 int nobiKeyPaddingPx = (int) (6f * getResources().getDisplayMetrics().density + 0.5f);
                 button.setPadding(nobiKeyPaddingPx, 0, nobiKeyPaddingPx, 0);
+                // v31.2: never let a MaterialButton minimum width force
+                // a key wider than its grid column (belt-and-braces next
+                // to the autosize — the v31.1 clip happened with autosize
+                // on, so the measure must not fight the column width).
+                button.setMinWidth(0);
+                button.setMinimumWidth(0);
 
                 button.setOnClickListener(view -> {
                     performExtraKeyButtonHapticFeedback(view, buttonInfo, button);

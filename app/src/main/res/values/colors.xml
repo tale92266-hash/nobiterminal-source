@@ -42,6 +42,8 @@
     <color name="nobi_ds_keycap_bg">#FFE9EFF9</color>
     <color name="nobi_ds_keycap_outline">#FFB9CBE8</color>
     <color name="nobi_ds_keycap_active_outline">#FF1A73E8</color>
+    <!-- v31.2: solid strip behind the extra keys (day twin = app bg). -->
+    <color name="nobi_ds_extra_keys_bar_bg">#FFF4F6FC</color>
     <color name="nobi_ds_tab_active_top">#FF2B7FFF</color>
     <color name="nobi_ds_purple">#FF7545D9</color>
     <color name="nobi_ds_success">#FF166534</color>

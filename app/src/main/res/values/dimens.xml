@@ -35,7 +35,7 @@
     <!-- Extra keys (spec 4). -->
     <dimen name="nobi_ds_extra_key_row_height">36dp</dimen>
     <dimen name="nobi_ds_extra_key_gap">3dp</dimen>
-    <dimen name="nobi_ds_extra_key_corner">8dp</dimen>
+    <dimen name="nobi_ds_extra_key_corner">10dp</dimen>
     <!-- Terminal workspace (spec 2C). -->
     <dimen name="nobi_ds_terminal_padding">8dp</dimen>
     <!-- Branding (spec 2D): ~50% smaller than the 132dp v7 marks. -->
