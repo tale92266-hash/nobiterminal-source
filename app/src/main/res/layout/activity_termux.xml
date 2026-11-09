@@ -547,7 +547,7 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/nobi_ds_extra_key_row_height"
-        android:background="@color/nobi_ds_terminal_bg" />
+        android:background="@android:color/transparent" />
 
     <!-- v7 (81): optional bottom navigation bar (drawer alternative). -->
     <LinearLayout

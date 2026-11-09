@@ -475,9 +475,15 @@ public final class ExtraKeysView extends GridLayout {
 
         removeAllViews();
 
-        // v31.2: solid dark strip behind the keys, exactly like the
-        // reference — no wallpaper bleeding through the gaps.
-        setBackgroundColor(mBarBackgroundColor);
+        // v31.3: NO solid strip — the reference shows the buttons
+        // floating straight on the canvas (the wallpaper shows through
+        // the gaps and below the keys). The bar is transparent; the
+        // wallpaper continuation behind it is painted by
+        // TermuxActivity.updateExtraKeysWallpaperSlice() as the
+        // ViewPager background. (v31.2 painted a solid strip here —
+        // that is exactly what Sam rejected: the bar looked like a
+        // separate dark slab and the keys sank into it.)
+        setBackgroundColor(android.graphics.Color.TRANSPARENT);
 
         ExtraKeyButton[][] buttons = extraKeysInfo.getMatrix();
 

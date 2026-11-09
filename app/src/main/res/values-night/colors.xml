@@ -40,11 +40,18 @@
          read as caps. Active tab gradient top (bright end).
          v31.2: premium reference look — fill darker near-black navy
          (#0D1526) with a soft light blue-grey outline (#46659C), so the
-         caps read as dark premium keys on the #070B18 strip. -->
-    <color name="nobi_ds_keycap_bg">#FF0D1526</color>
-    <color name="nobi_ds_keycap_outline">#FF46659C</color>
+         caps read as dark premium keys on the #070B18 strip.
+         v31.3: glass look — the bar is transparent now and the keys
+         float on the wallpaper, so the fill is translucent dark blue
+         (#1A2436 at 70% alpha; the wave tints through it) with a
+         brighter steel-blue outline (#6E93D6). -->
+    <color name="nobi_ds_keycap_bg">#B31A2436</color>
+    <color name="nobi_ds_keycap_outline">#FF6E93D6</color>
     <color name="nobi_ds_keycap_active_outline">#FF168BFF</color>
-    <!-- v31.2: solid strip behind the extra keys (night twin = app bg). -->
+    <!-- v31.2: solid strip behind the extra keys (night twin = app bg).
+         v31.3: no longer painted — the bar is transparent and the keys
+         float on the wallpaper (see ExtraKeysView.reload). Kept so the
+         theme attr stays defined. -->
     <color name="nobi_ds_extra_keys_bar_bg">#FF070B18</color>
     <color name="nobi_ds_tab_active_top">#FF1B5FC4</color>
     <color name="nobi_ds_purple">#FF7545D9</color>

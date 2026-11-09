@@ -1,7 +1,7 @@
-# NobiTerminal v31.2 — full source snapshot
+# NobiTerminal v31.3 — full source snapshot
 
-This repo is the **complete app source tree for NobiTerminal v31.2**
-(the version shipped as the v31.2 APK on 2026-11-09). It exists so the app's
+This repo is the **complete app source tree for NobiTerminal v31.3**
+(the version shipped as the v31.3 APK on 2026-11-09). It exists so the app's
 source can be browsed, understood, and edited by hand in one place.
 
 > This snapshot **is** the build route (since the 2026-11-08 migration to

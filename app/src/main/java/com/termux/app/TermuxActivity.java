@@ -225,6 +225,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     private float mTerminalToolbarDefaultHeight;
 
+    // v31.3: cached wallpaper source + current toolbar slice. The
+    // source (863x1823, drawable-nodpi) is decoded once; the slice is
+    // the continuation of the terminal wallpaper below the frozen
+    // container crop, drawn as the toolbar ViewPager background so the
+    // extra keys float on the canvas. Recycled when replaced.
+    private android.graphics.Bitmap mNobiWallpaperSrcBitmap;
+    private android.graphics.Bitmap mNobiToolbarSliceBitmap;
+
     /**
      * Unique identifier for this activity instance. Used for session attachment tracking.
      */
@@ -698,7 +706,82 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 layoutParams.height = height;
                 wallpaperView.setLayoutParams(layoutParams);
             }
+
+            // v31.3: the toolbar slice follows the frozen crop, so the
+            // wave continues seamlessly behind the extra keys.
+            updateExtraKeysWallpaperSlice();
         });
+    }
+
+    /**
+     * v31.3: paint the wallpaper continuation behind the extra-keys
+     * toolbar. The terminal wallpaper ImageView is centerCrop inside
+     * terminal_view_container (frozen height Hc, width W): it shows
+     * source rows from topOffset to topOffset + Hc/s at scale
+     * s = max(W/863, Hc/1823). The toolbar directly below it must show
+     * the NEXT rows at the SAME scale, otherwise the wave jumps at the
+     * seam. This crops exactly those rows and sets them as the toolbar
+     * ViewPager background, scaled to the toolbar size. Called from the
+     * freeze listener, so the slice is pinned to the keyboard-closed
+     * crop and never jumps when the keyboard opens/closes; rotation
+     * re-pins it via the next layout. Any failure leaves the toolbar
+     * transparent — a background must never crash the activity.
+     */
+    private void updateExtraKeysWallpaperSlice() {
+        try {
+            final androidx.viewpager.widget.ViewPager toolbar = getTerminalToolbarViewPager();
+            final View terminalContainer = findViewById(R.id.terminal_view_container);
+            final View wallpaperView = findViewById(R.id.nobi_terminal_wallpaper_view);
+            if (toolbar == null || terminalContainer == null || wallpaperView == null) return;
+
+            final int toolbarHeight = toolbar.getHeight();
+            if (toolbarHeight <= 0) {
+                // Not laid out yet — retry once after layout, but only
+                // while the toolbar is actually shown (a hidden toolbar
+                // stays height 0 forever and must not re-post endlessly).
+                if (toolbar.getVisibility() == View.VISIBLE)
+                    toolbar.post(this::updateExtraKeysWallpaperSlice);
+                return;
+            }
+
+            final int containerWidth = terminalContainer.getWidth();
+            final int containerHeight = wallpaperView.getLayoutParams().height;
+            if (containerWidth <= 0 || containerHeight <= 0) return;
+
+            if (mNobiWallpaperSrcBitmap == null || mNobiWallpaperSrcBitmap.isRecycled()) {
+                mNobiWallpaperSrcBitmap = android.graphics.BitmapFactory.decodeResource(
+                    getResources(), R.drawable.nobi_terminal_wallpaper);
+            }
+            if (mNobiWallpaperSrcBitmap == null) return;
+            final int srcW = mNobiWallpaperSrcBitmap.getWidth();
+            final int srcH = mNobiWallpaperSrcBitmap.getHeight();
+            if (srcW <= 0 || srcH <= 0) return;
+
+            // Mirror ImageView centerCrop for the container.
+            final float scale = Math.max((float) containerWidth / srcW,
+                (float) containerHeight / srcH);
+            final float shownSrcH = containerHeight / scale;
+            final float topOffset = (srcH - shownSrcH) / 2f;
+            final float sliceY0 = topOffset + shownSrcH;
+            float sliceSrcH = toolbarHeight / scale;
+            if (sliceY0 >= srcH || sliceSrcH <= 0) return;
+            if (sliceY0 + sliceSrcH > srcH) sliceSrcH = srcH - sliceY0;
+
+            final android.graphics.Bitmap cropped = android.graphics.Bitmap.createBitmap(
+                mNobiWallpaperSrcBitmap, 0, (int) sliceY0, srcW, Math.max(1, (int) sliceSrcH));
+            final android.graphics.Bitmap scaled = android.graphics.Bitmap.createScaledBitmap(
+                cropped, containerWidth, toolbarHeight, true);
+            if (cropped != scaled) cropped.recycle();
+
+            final android.graphics.Bitmap oldSlice = mNobiToolbarSliceBitmap;
+            mNobiToolbarSliceBitmap = scaled;
+            toolbar.setBackground(new android.graphics.drawable.BitmapDrawable(getResources(), scaled));
+            if (oldSlice != null && !oldSlice.isRecycled() && oldSlice != scaled) oldSlice.recycle();
+        } catch (Exception e) {
+            // Background only — never break the terminal over it.
+            com.termux.shared.logger.Logger.logWarn("TermuxActivity",
+                "v31.3: toolbar wallpaper slice failed, leaving transparent: " + e);
+        }
     }
 
 
